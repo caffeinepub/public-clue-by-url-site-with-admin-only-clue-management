@@ -1,24 +1,44 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-05T13:59:15.961Z",
+  "generatedAt": "2026-02-05T14:53:35.018Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 0,
-    "implemented": 0,
-    "items": []
+    "total": 1,
+    "implemented": 1,
+    "items": [
+      {
+        "id": "REQ-1",
+        "summary": "Update the frontend so the previously labeled page name \"public clue-by-url\" is renamed to \"Echofields\" everywhere it appears, including any route/page labels, headings, navigation text, and document/page titles.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/index.html",
+          "frontend/src/pages/Home.tsx",
+          "frontend/src/pages/CluePage.tsx",
+          "frontend/src/pages/AdminPage.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/index.html",
+          "frontend/src/pages/Home.tsx",
+          "frontend/src/pages/CluePage.tsx",
+          "frontend/src/pages/AdminPage.tsx"
+        ]
+      }
+    ]
   },
   "changedFiles": [
     "build-request.json",
+    "caffeine.lock.json",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/src/index.css",
+    "frontend/index.html",
+    "frontend/src/pages/AdminPage.tsx",
+    "frontend/src/pages/CluePage.tsx",
     "frontend/src/pages/Home.tsx",
-    "frontend/tailwind.config.js",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

@@ -1,6 +1,38 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Untitled request",
-  "requirements": []
+  "title": "Rename “public clue-by-url” page labeling to “Echofields”",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "summary": "Replace all user-facing occurrences of the old page name “public clue-by-url” with “Echofields”, including navigation text and document/page titles, without breaking routing.",
+      "acceptanceCriteria": [
+        "No user-facing UI text contains the phrase \"public clue-by-url\".",
+        "User-facing page name text reads \"Echofields\" consistently (e.g., headers/navigation/page heading/title where applicable).",
+        "Navigation to the renamed page still works and does not introduce routing errors."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/index.html",
+          "operation": "modify",
+          "description": "Update the document <title> to use “Echofields” (and remove any remaining “Public clue-by-URL”/legacy naming) so the browser tab title reflects the renamed public page."
+        },
+        {
+          "path": "frontend/src/pages/Home.tsx",
+          "operation": "modify",
+          "description": "Ensure the Home page sets an appropriate document title including “Echofields” (e.g., base title) to satisfy page-title rename expectations without altering routing behavior."
+        },
+        {
+          "path": "frontend/src/pages/CluePage.tsx",
+          "operation": "modify",
+          "description": "Set a route-appropriate document title that includes “Echofields” (e.g., “Echofields — Clue #<id>”) and verify no legacy name remains in any user-facing strings on this page."
+        },
+        {
+          "path": "frontend/src/pages/AdminPage.tsx",
+          "operation": "modify",
+          "description": "Set a document title including “Echofields” for the spectate/admin portal views and confirm no legacy page name appears in headings, labels, or helper text."
+        }
+      ]
+    }
+  ]
 }

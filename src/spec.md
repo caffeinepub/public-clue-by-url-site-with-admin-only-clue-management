@@ -1,9 +1,10 @@
 # Specification
 
 ## Summary
-**Goal:** Capture and reflect the user’s requested application changes in this iteration.
+**Goal:** Rename the previously labeled page “public clue-by-url” to “Echofields” across the frontend.
 
 **Planned changes:**
-- None
+- Update all user-facing UI text that currently displays “public clue-by-url” to instead display “Echofields” (e.g., navigation labels, headings, page labels, document/page titles).
+- Ensure navigation/routing to the renamed page continues to function without routing errors.
 
-**User-visible outcome:** No user-visible changes in this build (no requirements were provided in the BuildRequest).
+**User-visible outcome:** Users will see the page labeled as “Echofields” everywhere in the UI, and they can still navigate to it normally.

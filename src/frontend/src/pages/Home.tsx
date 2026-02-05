@@ -12,6 +12,9 @@ export function Home() {
   const { data: clues, isLoading: cluesLoading } = useListClues();
 
   useEffect(() => {
+    // Set document title
+    document.title = 'Echofields';
+
     // Check if user has seen the intro
     const hasSeenIntro = sessionStorage.getItem('echofields-intro-seen');
     

@@ -1,4 +1,5 @@
 import { useParams, useNavigate } from '@tanstack/react-router';
+import { useEffect } from 'react';
 import { useGetClue } from '../hooks/useQueries';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -14,6 +15,15 @@ export function CluePage() {
   // Parse clueId as number for backend
   const clueIdNum = clueId ? parseInt(clueId, 10) : NaN;
   const { data: clue, isLoading, error } = useGetClue(isNaN(clueIdNum) ? null : BigInt(clueIdNum));
+
+  useEffect(() => {
+    // Set document title
+    if (clueId && !isNaN(clueIdNum)) {
+      document.title = `Echofields — Clue #${clueId}`;
+    } else {
+      document.title = 'Echofields';
+    }
+  }, [clueId, clueIdNum]);
 
   if (isLoading) {
     return (

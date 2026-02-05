@@ -1,9 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useInternetIdentity } from '../hooks/useInternetIdentity';
 import { useListClues, useCreateClue, useDeleteClue } from '../hooks/useQueries';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -17,22 +16,31 @@ import { RichClueContent } from '../components/RichClueContent';
 // OWNER ALLOWLIST: Add your principal ID here to grant admin access
 // To find your principal: log in and check the console or the authenticated alert below
 const OWNER_PRINCIPALS: string[] = [
+  'zhd5h-lqb4c-ggxib-3x2cp-urwjt-sexwi-rgbem-5hf3h-trvbe-xbnyu-sae',
   // Add your principal IDs here, e.g.:
   // '2vxsx-fae',
   // 'xxxxx-xxxxx-xxxxx-xxxxx-xxx',
 ];
 
 export function AdminPage() {
-  const { identity, login, clear, loginStatus, isLoginSuccess } = useInternetIdentity();
+  const { identity, login, clear, loginStatus, isInitializing } = useInternetIdentity();
   const { data: clues, isLoading: cluesLoading } = useListClues();
   const createClue = useCreateClue();
   const deleteClue = useDeleteClue();
 
   const [newClue, setNewClue] = useState('');
 
+  // Check if user is authenticated (has a non-anonymous identity)
+  const isAuthenticated = identity && !identity.getPrincipal().isAnonymous();
+  
   // Check if logged-in user is the owner
   const userPrincipal = identity?.getPrincipal().toString();
   const isOwner = userPrincipal && OWNER_PRINCIPALS.includes(userPrincipal);
+
+  useEffect(() => {
+    // Set document title
+    document.title = 'Echofields — Spectate Portal';
+  }, []);
 
   const handleCreateClue = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -73,14 +81,32 @@ export function AdminPage() {
     }
   };
 
+  // Still initializing - show loading state
+  if (isInitializing) {
+    return (
+      <div className="container mx-auto px-4 py-16">
+        <div className="mx-auto max-w-md space-y-6">
+          <Card className="border-2">
+            <CardContent className="pt-6">
+              <div className="flex flex-col items-center gap-4">
+                <Skeleton className="h-12 w-12 rounded-full" />
+                <Skeleton className="h-4 w-48" />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
   // Not logged in - show login prompt
-  if (!isLoginSuccess) {
+  if (!isAuthenticated) {
     return (
       <div className="container mx-auto px-4 py-16">
         <div className="mx-auto max-w-md space-y-6">
           <Card className="border-2">
             <CardHeader>
-              <CardTitle className="text-2xl">Admin Access</CardTitle>
+              <CardTitle className="text-2xl">Spectate Portal</CardTitle>
               <CardDescription>
                 Login with Internet Identity to manage clues
               </CardDescription>
@@ -124,28 +150,11 @@ export function AdminPage() {
                 You do not have permission to access this area
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <Alert variant="destructive">
-                <ShieldAlert className="h-4 w-4" />
-                <AlertTitle>Owner Access Only</AlertTitle>
-                <AlertDescription>
-                  This admin portal is restricted to the site owner. Your principal ID is not in the allowlist.
-                </AlertDescription>
-              </Alert>
-              
-              <div className="rounded-lg bg-muted p-4">
-                <p className="text-xs font-medium text-muted-foreground mb-2">Your Principal ID:</p>
-                <code className="block break-all rounded bg-background px-3 py-2 text-xs font-mono">
-                  {userPrincipal}
-                </code>
-              </div>
-
-              <div className="flex gap-2">
-                <Button variant="outline" onClick={clear} className="flex-1">
-                  <LogOut className="mr-2 h-4 w-4" />
-                  Logout
-                </Button>
-              </div>
+            <CardContent>
+              <Button variant="outline" onClick={clear} className="w-full">
+                <LogOut className="mr-2 h-4 w-4" />
+                Logout
+              </Button>
             </CardContent>
           </Card>
         </div>
@@ -160,9 +169,12 @@ export function AdminPage() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-4xl font-bold">Admin Portal</h1>
+            <h1 className="text-4xl font-bold">Spectate Portal</h1>
             <p className="mt-2 text-muted-foreground">
               Manage clues for the Echofields experience
+            </p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Portal path: <code className="rounded bg-muted px-2 py-1">/echofields/spectate</code>
             </p>
           </div>
           <Button variant="outline" onClick={clear}>

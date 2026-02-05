@@ -1,259 +1,29 @@
 {
   "schemaVersion": "1.0.0",
   "projectStateVersion": 3,
-  "summary": "Echofields is a React single-page app that lets users discover and view text-based “clues” via URL paths under /echofields (e.g., /echofields/1). It includes a separate admin portal at /echofields/admin intended for the site owner to create and delete clues. The frontend uses TanStack Router for routing, React Query for data fetching/mutations, and an Internet Identity (DFINITY AuthClient) provider for authentication. The backend is a Motoko canister with in-memory clue storage and a token-based access-control system that assigns the first properly-initialized caller as admin and others as users.",
+  "summary": "New project",
+  "architectural_notes": [],
+  "known_issues": [],
+  "isFixRequest": false,
   "existing_features": [
     {
-      "id": "IF-1",
-      "title": "Route-based navigation under /echofields with root redirect",
-      "synonyms": [
-        "TanStack Router setup",
-        "/ to /echofields redirect",
-        "dynamic clue route"
-      ],
-      "description": "Defines TanStack Router routes for /echofields (Home), /echofields/$clueId (CluePage), and /echofields/admin (AdminPage), and redirects the root path / to /echofields via a Navigate component.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-2",
-      "title": "Shared application layout with header and footer",
-      "synonyms": [
-        "global layout",
-        "site chrome",
-        "Layout route"
-      ],
-      "description": "Wraps all pages in a shared layout component that renders a sticky header with an Echofields home navigation button and a footer with attribution.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-3",
-      "title": "Public landing page with first-visit intro animation",
-      "synonyms": [
-        "Home page",
-        "landing intro",
-        "Echofields splash animation"
-      ],
-      "description": "Implements a landing page at /echofields that shows a 3-second “Echofields” intro animation on first visit (tracked in sessionStorage), then displays feature cards and instructions without requiring login.",
+      "id": "feature-update-the-frontend-so-the-previously-labeled-page-name-public-clue-by-url-is-renamed-to-echofields-everywhere-it-appears-including-any-route-page-labels-headings-navigation-text-and-document-page-titles",
+      "title": "Update the frontend so the previously labeled page name \"public clue-by-url\" is renamed to \"Echofields\" everywhere it appears, including any route/page labels, headings, navigation text, and document/page titles.",
       "reqIds": [
-        "REQ-11",
-        "REQ-10"
+        "REQ-1"
       ],
-      "version": 1
-    },
-    {
-      "id": "IF-4",
-      "title": "Public clue viewing page with loading and not-found states",
-      "synonyms": [
-        "CluePage",
-        "clue viewer",
-        "clue detail route"
-      ],
-      "description": "Fetches a clue by URL parameter, shows skeletons while loading, and displays a not-found/invalid-ID error UI with navigation back to /echofields.",
-      "reqIds": [
-        "REQ-10"
-      ],
-      "version": 1
-    },
-    {
-      "id": "IF-5",
-      "title": "Safe rich clue rendering with Markdown image support",
-      "synonyms": [
-        "RichClueContent",
-        "Markdown image parsing",
-        "inline image embedding"
-      ],
-      "description": "Parses clue text for Markdown image syntax ![alt](url) and renders text and images without allowing raw HTML. Image URLs are validated (http/https or relative) and broken images are hidden on error.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-6",
-      "title": "Internet Identity authentication provider and hook",
-      "synonyms": [
-        "AuthClient integration",
-        "InternetIdentityProvider",
-        "login/logout context"
-      ],
-      "description": "Provides a React context for Internet Identity using @dfinity/auth-client, including stored-identity initialization, login with configurable derivation origin, logout/clear, and granular status flags/errors.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-7",
-      "title": "Identity-bound backend actor creation and access-control initialization",
-      "synonyms": [
-        "useActor",
-        "actor switching",
-        "_initializeAccessControlWithSecret bootstrap"
-      ],
-      "description": "Creates an anonymous backend actor when logged out and an identity-bound actor when logged in. On authenticated actor creation, reads a secret (caffeineAdminToken) from the URL hash/session and calls _initializeAccessControlWithSecret, then invalidates/refetches other React Query queries when the actor changes.",
-      "reqIds": [
-        "REQ-9",
-        "REQ-12"
-      ],
-      "version": 1
-    },
-    {
-      "id": "IF-8",
-      "title": "React Query data layer for clue operations",
-      "synonyms": [
-        "useListClues",
-        "useGetClue",
-        "useCreateClue",
-        "useDeleteClue"
-      ],
-      "description": "Implements query/mutation hooks for listing clues, fetching a clue by ID, creating clues, and deleting clues through the backend actor, including query cache invalidation after mutations.",
-      "reqIds": [
-        "REQ-12"
-      ],
-      "version": 1
-    },
-    {
-      "id": "IF-9",
-      "title": "Admin portal UI with Internet Identity login and owner allowlist gating",
-      "synonyms": [
-        "AdminPage",
-        "owner-only admin portal",
-        "admin access denied UI"
-      ],
-      "description": "Provides an admin portal at /echofields/admin that prompts for Internet Identity login, denies access unless the logged-in principal is in a local allowlist, and (when owner) exposes UI for creating and deleting clues with toasts and confirmation prompts plus an Edit/Preview tabbed editor.",
-      "reqIds": [
-        "REQ-9"
-      ],
-      "version": 1
-    },
-    {
-      "id": "IF-10",
-      "title": "Secret URL parameter handling (hash + sessionStorage)",
-      "synonyms": [
-        "urlParams utilities",
-        "hash secret extraction",
-        "session persistence"
-      ],
-      "description": "Utilities to extract parameters from query or hash, persist them in sessionStorage, and securely handle secrets via hash-only parameters (getSecretParameter) that are removed from the address bar after extraction.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-11",
-      "title": "Backend role-based access control with admin bootstrap token",
-      "synonyms": [
-        "AccessControl module",
-        "MixinAuthorization",
-        "admin/user/guest roles"
-      ],
-      "description": "Implements a role system where the first principal to initialize with the correct token becomes #admin, others become #user, and anonymous is treated as #guest. Exposes helper methods (isAdmin, getUserRole, assignRole) and a mixin method (_initializeAccessControlWithSecret) that validates the token against CAFFEINE_ADMIN_TOKEN.",
-      "reqIds": [
-        "REQ-9",
-        "REQ-12"
-      ],
-      "version": 1
-    },
-    {
-      "id": "IF-12",
-      "title": "Backend clue storage and CRUD APIs",
-      "synonyms": [
-        "Motoko clues module",
-        "create/get/list/delete clues",
-        "in-memory persistence"
-      ],
-      "description": "Stores clues in a Motoko Map keyed by incremental Nat IDs and exposes actor methods to create and delete clues (admin-only) and get/list clues (user-gated), with not-found errors implemented via Runtime.trap.",
-      "reqIds": [
-        "REQ-12"
-      ],
-      "version": 1
-    },
-    {
-      "id": "IF-13",
-      "title": "Backend user profile storage and APIs",
-      "synonyms": [
-        "UserProfile",
-        "profile get/save",
-        "principal-keyed profiles"
-      ],
-      "description": "Provides a simple UserProfile type and actor methods to get/save the caller’s profile and read other profiles with authorization checks (self or admin).",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-14",
-      "title": "Tailwind + shadcn/ui styling with dark mode and typography",
-      "synonyms": [
-        "Tailwind theming",
-        "next-themes",
-        "@tailwindcss/typography"
-      ],
-      "description": "Uses Tailwind CSS with design tokens for light/dark themes (default dark), shadcn/ui components, and typography/animate plugins; includes CSS keyframes/utilities for the landing intro animation.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-15",
-      "title": "Backend upgrade migration stub",
-      "synonyms": [
-        "migration.mo",
-        "upgrade scaffolding"
-      ],
-      "description": "Includes a placeholder migration module (Migration.run) to support canister upgrades, currently returning an empty upgraded actor state.",
-      "reqIds": [],
       "version": 1
     }
   ],
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Update PPT clue display to use “Option 1” formatting/behavior (per user request).",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-2",
-      "summary": "Fix Admin portal authentication UI: add/restore a visible Internet Identity login button on /echofields/admin.",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-3",
-      "summary": "Apply a new visual style: use a Eurostile-style font, green color theme, and a fading/zooming animation for the Echofields branding/intro.",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-4",
-      "summary": "Expose newly added clues on the main site (e.g., show the first/latest clue as an option/link on the /echofields home page after creation).",
+      "summary": "Rename the page from \"public clue-by-url\" to \"echofields\"",
       "reqIds": [],
       "status": "pending"
     }
   ],
-  "architectural_notes": [
-    "Frontend is a React SPA using TanStack Router with a shared layout and a hard redirect from / to /echofields.",
-    "Server interactions are encapsulated in @tanstack/react-query hooks (queries + mutations) with cache invalidation on successful mutations.",
-    "Internet Identity is integrated via a React context/provider wrapping @dfinity/auth-client and exposing login/logout plus status flags.",
-    "Backend actor creation is centralized in a hook (useActor) that switches between anonymous and identity-bound actors and forces query refresh when the actor changes.",
-    "Admin privilege bootstrap uses a shared Motoko mixin: frontend passes a secret (hash/session) to _initializeAccessControlWithSecret, which is validated against a canister env var (CAFFEINE_ADMIN_TOKEN).",
-    "Motoko authorization is role-based (#admin/#user/#guest) and enforced with Runtime.trap on unauthorized access.",
-    "Clues are stored in-memory in a Motoko Map with incremental Nat IDs; backend exposes create/get/list/delete APIs.",
-    "Clue rendering intentionally avoids raw HTML: a custom RichClueContent parser only supports Markdown image syntax and validates URL schemes.",
-    "UI is built with Tailwind + shadcn/ui components, next-themes (dark by default), and @tailwindcss/typography for prose styling.",
-    "Sensitive URL secrets are handled via hash-fragment extraction and sessionStorage persistence, with URL cleanup via history.replaceState."
-  ],
-  "known_issues": [
-    "Backend clue APIs (getClue/listClues) require the caller to have #user permission, but the frontend is designed to allow public (logged-out) clue viewing; anonymous callers will likely trap with \"User is not registered\"/unauthorized unless backend policy changes.",
-    "AdminPage owner allowlist (OWNER_PRINCIPALS) is empty by default, so all logged-in principals will be denied until configured at build time.",
-    "Admin access is gated twice (frontend allowlist + backend token-based admin assignment); these can conflict and create confusing failure modes.",
-    "listClues returns only [Text] without IDs; the admin UI infers IDs from array index (index+1), which is unreliable (Map value order is not guaranteed, and deletions create holes).",
-    "If CAFFEINE_ADMIN_TOKEN is not set in the canister environment, _initializeAccessControlWithSecret traps, preventing authenticated actor initialization.",
-    "If the first authenticated user initializes with the wrong token, they are stored as #user and cannot be promoted later (assignRole is admin-only), potentially locking out admin creation.",
-    "Clues and userProfiles are not stored in stable variables; state will be lost on canister upgrade/reinstall (migration.mo is effectively a stub).",
-    "RichClueContent allows relative image URLs starting with '/', which may be undesirable depending on hosting/trust assumptions for embedded content.",
-    "React Query invalidation/refetch on actor changes is broad (all non-actor queries), which may cause bursts of network calls and UI churn on login/logout.",
-    "Clue IDs are parsed with parseInt in the route (CluePage); very large IDs or non-decimal inputs are not supported and will be treated as invalid."
-  ],
-  "isFixRequest": true,
-  "gameProjectType": "none",
-  "projectName": "Echofields",
+  "projectName": "Rename the public page to “Echofields”",
   "clarification_mode": "instant",
   "clarification_rounds": 0
 }

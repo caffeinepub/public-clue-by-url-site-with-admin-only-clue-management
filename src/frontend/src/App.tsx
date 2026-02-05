@@ -24,6 +24,11 @@ function RedirectToEchofields() {
   return <Navigate to="/echofields" />;
 }
 
+// Redirect component for legacy admin route
+function RedirectToSpectate() {
+  return <Navigate to="/echofields/spectate" />;
+}
+
 // Root route with layout
 const rootRoute = createRootRoute({
   component: Layout,
@@ -50,11 +55,18 @@ const clueRoute = createRoute({
   component: CluePage,
 });
 
-// Admin route under echofields
-const adminRoute = createRoute({
+// Spectate route under echofields (new admin portal path)
+const spectateRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/echofields/spectate',
+  component: AdminPage,
+});
+
+// Legacy admin route - redirects to spectate
+const legacyAdminRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/echofields/admin',
-  component: AdminPage,
+  component: RedirectToSpectate,
 });
 
 // Create the route tree
@@ -62,7 +74,8 @@ const routeTree = rootRoute.addChildren([
   indexRoute,
   echofieldsRoute,
   clueRoute,
-  adminRoute,
+  spectateRoute,
+  legacyAdminRoute,
 ]);
 
 // Create the router

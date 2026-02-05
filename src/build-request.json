@@ -1,12 +1,47 @@
 {
   "kind": "build_request",
-  "title": "Untitled request",
+  "title": "Rename the public page to “Echofields”",
   "priority": "normal",
-  "requirements": [],
-  "constraints": [],
-  "nonGoals": [],
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "text": "Update the frontend so the previously labeled page name \"public clue-by-url\" is renamed to \"Echofields\" everywhere it appears, including any route/page labels, headings, navigation text, and document/page titles.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-user-1"
+        ],
+        "quotes": [
+          "wait don't name it public clue-by-url.... instead name the page echofields"
+        ]
+      },
+      "acceptanceCriteria": [
+        "No user-facing UI text contains the phrase \"public clue-by-url\".",
+        "User-facing page name text reads \"Echofields\" consistently (e.g., headers/navigation/page heading/title where applicable).",
+        "Navigation to the renamed page still works and does not introduce routing errors."
+      ]
+    }
+  ],
+  "constraints": [
+    "Do not modify files under frontend/immutablePaths (compose existing UI components instead of editing them).",
+    "Use English for any user-facing text."
+  ],
+  "nonGoals": [
+    "No backend (Motoko) changes unless required solely to support the rename.",
+    "No new features beyond renaming the page and associated labels/titles."
+  ],
   "imageRequirements": {
     "required": [],
     "edits": []
+  },
+  "userProfileUpdate": {
+    "goalsToAdd": [],
+    "goalsToRemove": [],
+    "preferencesToAdd": [],
+    "preferencesToRemove": [],
+    "miscToAdd": [],
+    "miscToRemove": [],
+    "fieldsToSet": {},
+    "fieldsToDelete": []
   }
 }
