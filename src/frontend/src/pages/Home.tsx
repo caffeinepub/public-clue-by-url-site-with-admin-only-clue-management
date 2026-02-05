@@ -1,10 +1,47 @@
+import { useState, useEffect } from 'react';
 import { useNavigate } from '@tanstack/react-router';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Lock, Map, Search } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Lock, Map, Search, ArrowRight } from 'lucide-react';
+import { useListClues } from '../hooks/useQueries';
 
 export function Home() {
+  const [showIntro, setShowIntro] = useState(false);
+  const [introComplete, setIntroComplete] = useState(false);
   const navigate = useNavigate();
+  const { data: clues, isLoading: cluesLoading } = useListClues();
+
+  useEffect(() => {
+    // Check if user has seen the intro
+    const hasSeenIntro = sessionStorage.getItem('echofields-intro-seen');
+    
+    if (!hasSeenIntro) {
+      setShowIntro(true);
+      // Mark intro as complete after animation
+      const timer = setTimeout(() => {
+        setIntroComplete(true);
+        sessionStorage.setItem('echofields-intro-seen', 'true');
+      }, 3000); // 3 second animation
+
+      return () => clearTimeout(timer);
+    } else {
+      setIntroComplete(true);
+    }
+  }, []);
+
+  const hasClues = clues && clues.length > 0;
+
+  if (showIntro && !introComplete) {
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-background">
+        <div className="intro-animation">
+          <h1 className="echofields-title text-7xl font-bold tracking-tight sm:text-8xl">
+            Echofields
+          </h1>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto px-4 py-16">
@@ -12,13 +49,37 @@ export function Home() {
         {/* Hero Section */}
         <div className="space-y-6 text-center">
           <h1 className="text-5xl font-bold tracking-tight sm:text-6xl">
-            Welcome to <span className="text-accent">Echofields</span>
+            Welcome to <span className="echofields-title">Echofields</span>
           </h1>
           <p className="mx-auto max-w-2xl text-xl text-muted-foreground">
             A journey of discovery through hidden clues. Progress by exploring different paths.
             Each URL reveals a new piece of the puzzle.
           </p>
         </div>
+
+        {/* First Clue CTA - Only show if clues exist */}
+        {hasClues && (
+          <div className="flex justify-center">
+            <Card className="border-2 border-echofields-green/30 bg-gradient-to-br from-echofields-green/5 to-transparent">
+              <CardHeader className="text-center">
+                <CardTitle className="text-2xl">Ready to Begin?</CardTitle>
+                <CardDescription>
+                  Start your journey with the first clue
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="flex justify-center">
+                <Button
+                  size="lg"
+                  onClick={() => navigate({ to: '/echofields/$clueId', params: { clueId: '1' } })}
+                  className="bg-echofields-green hover:bg-echofields-green/90 text-white"
+                >
+                  View First Clue
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        )}
 
         {/* Feature Cards */}
         <div className="grid gap-6 md:grid-cols-3">
@@ -59,29 +120,13 @@ export function Home() {
           </Card>
         </div>
 
-        {/* CTA Section */}
-        <div className="space-y-6 rounded-lg border-2 bg-card p-8 text-center">
-          <h2 className="text-2xl font-semibold">Ready to Begin?</h2>
-          <p className="text-muted-foreground">
-            Start your exploration by visiting a clue URL, or manage clues if you're the admin.
-          </p>
-          <div className="flex flex-wrap justify-center gap-4">
-            <Button
-              size="lg"
-              onClick={() => navigate({ to: '/echofields/admin' })}
-            >
-              Admin Portal
-            </Button>
-          </div>
-        </div>
-
         {/* Instructions */}
         <div className="space-y-4 rounded-lg bg-muted/30 p-6">
           <h3 className="text-lg font-semibold">How It Works</h3>
           <ol className="space-y-2 text-muted-foreground">
             <li className="flex gap-3">
               <span className="font-semibold text-foreground">1.</span>
-              <span>Visit a clue URL like <code className="rounded bg-muted px-2 py-1 text-sm">/echofields/first-clue</code></span>
+              <span>Visit a clue URL like <code className="rounded bg-muted px-2 py-1 text-sm">/echofields/1</code></span>
             </li>
             <li className="flex gap-3">
               <span className="font-semibold text-foreground">2.</span>

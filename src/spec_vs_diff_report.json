@@ -1,67 +1,39 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-05T01:52:49.223Z",
-  "summary": "REQ-6 appears implemented: TanStack Router now registers public and admin routes under the /echofields base path, including /echofields/$clueId and /echofields/admin, with a redirect from / to /echofields. No old top-level clue routes are registered in the provided diff summary.",
+  "generatedAt": "2026-02-05T13:59:15.945Z",
+  "summary": "BuildRequest contains no requirements or acceptance criteria, so no missing requirements can be identified. The diff introduces multiple frontend UI, routing, auth/admin, and styling features that were not requested.",
   "missing_requirements": [],
   "hallucinated_features": [
     {
-      "description": "Introduced a new (empty) Motoko backend actor file.",
-      "reason": "BuildRequest only asked for frontend routing changes (REQ-6) and did not request adding or altering backend logic/files.",
+      "description": "Added/modified global styling with OKLCH theme tokens, Michroma Google Font import, custom echofields-green token, and intro animation keyframes/classes.",
+      "reason": "No requirements were specified in the BuildRequest; these are unrequested additions.",
       "evidence": [
-        "backend/main.mo"
+        "frontend/src/index.css",
+        "frontend/tailwind.config.js"
       ]
     },
     {
-      "description": "Added an Internet Identity authentication hook/provider and actor-creation hook plumbing.",
-      "reason": "REQ-6 requires admin routes remain reachable and still require Internet Identity authentication for admin actions, but it did not request implementing the full auth hook/provider infrastructure as part of this change.",
-      "evidence": [
-        "frontend/src/hooks/useInternetIdentity.ts",
-        "frontend/src/hooks/useActor.ts",
-        "frontend/src/main.tsx",
-        "frontend/src/pages/AdminPage.tsx"
-      ]
-    },
-    {
-      "description": "Implemented mock clue data and CRUD-like operations via React Query hooks.",
-      "reason": "REQ-6 is about URL path structure (/echofields/...) and route registration; it does not request building or mocking the clue data layer.",
-      "evidence": [
-        "frontend/src/hooks/useQueries.ts"
-      ]
-    },
-    {
-      "description": "Added new UI pages/components (Home, CluePage, AdminPage, Header, Footer) and styling/theme setup (Tailwind CSS config and global CSS, ThemeProvider).",
-      "reason": "REQ-6 focuses on updating routing paths to include 'echofields'; these additional UI/UX features are not explicitly requested in the BuildRequest.",
+      "description": "Implemented/modified Home page with first-visit intro animation using sessionStorage and a conditional \"View First Clue\" CTA driven by fetched clues.",
+      "reason": "No requirements were specified in the BuildRequest; this behavior is unrequested.",
       "evidence": [
         "frontend/src/pages/Home.tsx",
-        "frontend/src/pages/CluePage.tsx",
-        "frontend/src/pages/AdminPage.tsx",
-        "frontend/src/components/Header.tsx",
-        "frontend/src/components/Footer.tsx",
-        "frontend/src/index.css",
-        "frontend/index.css",
-        "frontend/tailwind.config.js",
-        "frontend/src/App.tsx"
+        "frontend-file-summaries.txt"
+      ]
+    },
+    {
+      "description": "Introduced/modified application-wide features described in summaries: TanStack Router route prefixing under /echofields with root redirect; simplified header/footer; React Query hooks for clue operations; Sonner toasts; public clue page; admin portal with Internet Identity and owner allowlist; rich clue markdown image rendering.",
+      "reason": "No requirements were specified in the BuildRequest; these appear as additional scope beyond any stated request.",
+      "evidence": [
+        "frontend-file-summaries.txt",
+        "project_state.json"
       ]
     }
   ],
-  "confidence": 0.78,
+  "confidence": 0.74,
   "changed_files": [
-    "all_files_summary.json",
-    "backend/main.mo",
     "frontend-file-summaries.txt",
-    "frontend/index.css",
-    "frontend/index.html",
-    "frontend/src/App.tsx",
-    "frontend/src/components/Footer.tsx",
-    "frontend/src/components/Header.tsx",
-    "frontend/src/hooks/useActor.ts",
-    "frontend/src/hooks/useInternetIdentity.ts",
-    "frontend/src/hooks/useQueries.ts",
     "frontend/src/index.css",
-    "frontend/src/main.tsx",
-    "frontend/src/pages/AdminPage.tsx",
-    "frontend/src/pages/CluePage.tsx",
     "frontend/src/pages/Home.tsx",
     "frontend/tailwind.config.js",
     "project_state.json"

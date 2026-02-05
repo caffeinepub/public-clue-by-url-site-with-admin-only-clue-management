@@ -1,24 +1,4 @@
 {
   "kind": "feature_evidence_report",
-  "features": [
-    {
-      "featureId": "feature-update-the-frontend-routing-so-that-all-public-clue-progress-pages-are-accessible-under-a-base-path-that-includes-the-word-echofields-for-example-echofields-without-breaking-the-existing-url-based-progression-behavior-ensure-any-admin-management-area-routes-also-include-echofields-in-their-path-for-example-echofields-admin",
-      "featureTitle": "Update the frontend routing so that all public clue/progress pages are accessible under a base path that includes the word \"echofields\" (for example: \"/echofields/...\"), without breaking the existing URL-based progression behavior. Ensure any admin management area routes also include \"echofields\" in their path (for example: \"/echofields/admin\").",
-      "files": [
-        "frontend/src/App.tsx",
-        "frontend/src/main.tsx"
-      ],
-      "components": [
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-6"
-      ],
-      "confidence": "high"
-    }
-  ]
+  "features": []
 }

@@ -5,11 +5,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Home, AlertCircle } from 'lucide-react';
+import { RichClueContent } from '../components/RichClueContent';
 
 export function CluePage() {
   const { clueId } = useParams({ strict: false });
   const navigate = useNavigate();
-  const { data: clue, isLoading, error } = useGetClue(clueId || '');
+  
+  // Parse clueId as number for backend
+  const clueIdNum = clueId ? parseInt(clueId, 10) : NaN;
+  const { data: clue, isLoading, error } = useGetClue(isNaN(clueIdNum) ? null : BigInt(clueIdNum));
 
   if (isLoading) {
     return (
@@ -22,7 +26,7 @@ export function CluePage() {
     );
   }
 
-  if (error || !clue) {
+  if (error || !clue || isNaN(clueIdNum)) {
     return (
       <div className="container mx-auto px-4 py-16">
         <div className="mx-auto max-w-3xl space-y-6">
@@ -58,16 +62,16 @@ export function CluePage() {
           <CardHeader>
             <div className="flex items-start justify-between">
               <div className="space-y-2">
-                <CardTitle className="text-3xl">{clue.title}</CardTitle>
+                <CardTitle className="text-3xl">Clue #{clueId}</CardTitle>
                 <CardDescription>
-                  Clue ID: <code className="rounded bg-muted px-2 py-1 text-sm">{clue.id}</code>
+                  Clue ID: <code className="rounded bg-muted px-2 py-1 text-sm">{clueId}</code>
                 </CardDescription>
               </div>
             </div>
           </CardHeader>
           <CardContent>
             <div className="prose prose-neutral dark:prose-invert max-w-none">
-              <p className="whitespace-pre-wrap text-lg leading-relaxed">{clue.content}</p>
+              <RichClueContent content={clue} />
             </div>
           </CardContent>
         </Card>

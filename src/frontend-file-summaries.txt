@@ -1,11 +1,13 @@
 {
   "frontend/src/App.tsx": "Main application component with TanStack Router configured to prefix all routes with /echofields, including home, dynamic clue pages, and admin portal, with a proper redirect component from root to /echofields that follows React hooks rules.",
-  "frontend/src/pages/Home.tsx": "Landing page for Echofields that explains the URL-based clue exploration concept with feature cards and instructions for getting started.",
-  "frontend/src/pages/CluePage.tsx": "Dynamic page component that displays individual clues based on the URL parameter, with error handling for non-existent clues.",
-  "frontend/src/pages/AdminPage.tsx": "Admin portal page with Internet Identity authentication that allows authorized users to create and delete clues, with a development notice indicating mock data usage until backend is implemented.",
-  "frontend/src/components/Header.tsx": "Site header with Echofields branding and navigation to admin portal, using router state to conditionally show admin button.",
+  "frontend/src/pages/Home.tsx": "Public landing page with first-visit intro animation displaying \"Echofields\" in Michroma font with green color and zoom animation, featuring cards, instructions, and a prominent \"View First Clue\" button that appears when clues exist and navigates using proper TanStack Router params.",
+  "frontend/src/pages/CluePage.tsx": "Public clue viewing page that fetches clues by bigint ID from backend without requiring authentication, with proper error handling for invalid or missing clues.",
+  "frontend/src/pages/AdminPage.tsx": "Admin portal with Internet Identity login and owner-only access control using an explicitly typed string array allowlist for principal IDs, showing explicit access-denied UI for non-owners and backend-backed clue management with proper error handling for authorization failures.",
+  "frontend/src/components/Header.tsx": "Simplified site header with only the Echofields branding link, no admin button on any route.",
   "frontend/src/components/Footer.tsx": "Site footer with copyright notice and caffeine.ai attribution link with heart icon.",
-  "frontend/src/hooks/useQueries.ts": "React Query hooks for clue operations with mock data implementation since backend methods are not yet available, including comments indicating where backend calls should be integrated.",
-  "frontend/src/index.css": "Global styles with OKLCH color system customized for a clean, modern look with teal accent color and proper light/dark mode support.",
-  "frontend/src/main.tsx": "Application entry point with QueryClient, InternetIdentityProvider, and Sonner toast notifications configured."
+  "frontend/src/hooks/useQueries.ts": "React Query hooks for backend clue operations (list, get, create, delete) using the backend actor interface with proper error handling and query invalidation.",
+  "frontend/src/index.css": "Global styles with OKLCH color system, Michroma font import from Google Fonts, custom echofields-green color token, and enhanced fadeInZoom keyframe animation for the Echofields intro with green styling.",
+  "frontend/src/main.tsx": "Application entry point with QueryClient, InternetIdentityProvider, and Sonner toast notifications configured.",
+  "frontend/src/components/RichClueContent.tsx": "Reusable component that safely parses and renders clue content with Markdown image syntax support, validating URLs and preventing HTML injection while preserving plain-text formatting.",
+  "frontend/tailwind.config.js": "Tailwind configuration with Michroma font family, echofields-green color token, and enhanced fadeInZoom animation utilities."
 }

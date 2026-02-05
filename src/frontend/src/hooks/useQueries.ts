@@ -1,66 +1,38 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useActor } from './useActor';
 
-export interface Clue {
-  id: string;
-  title: string;
-  content: string;
-  createdAt: bigint;
-}
-
-// Mock data for demonstration until backend is implemented
-const mockClues: Clue[] = [
-  {
-    id: 'welcome',
-    title: 'Welcome to Echofields',
-    content: 'This is your first clue. The journey begins here. Look for the word "hidden" to find your next path.',
-    createdAt: BigInt(Date.now() * 1000000),
-  },
-  {
-    id: 'hidden',
-    title: 'The Hidden Path',
-    content: 'You found the hidden path! The next clue awaits at "mystery".',
-    createdAt: BigInt(Date.now() * 1000000),
-  },
-  {
-    id: 'mystery',
-    title: 'The Mystery Deepens',
-    content: 'Well done! You are progressing through the fields. This is a placeholder until the backend is fully implemented.',
-    createdAt: BigInt(Date.now() * 1000000),
-  },
-];
-
 export function useListClues() {
   const { actor, isFetching } = useActor();
 
-  return useQuery<Clue[]>({
+  return useQuery<string[]>({
     queryKey: ['clues'],
     queryFn: async () => {
-      if (!actor) return mockClues;
-      // Backend method not yet implemented, using mock data
-      // When backend is ready: return actor.listAllClues();
-      return mockClues;
+      if (!actor) throw new Error('Actor not available');
+      return actor.listClues();
     },
     enabled: !!actor && !isFetching,
   });
 }
 
-export function useGetClue(id: string) {
+export function useGetClue(clueId: bigint | null) {
   const { actor, isFetching } = useActor();
 
-  return useQuery<Clue | null>({
-    queryKey: ['clue', id],
+  return useQuery<string | null>({
+    queryKey: ['clue', clueId?.toString()],
     queryFn: async () => {
-      if (!actor || !id) return null;
-      // Backend method not yet implemented, using mock data
-      // When backend is ready: 
-      // const result = await actor.getClue(id);
-      // if ('Some' in result) return result.Some;
-      // return null;
-      const clue = mockClues.find(c => c.id === id);
-      return clue || null;
+      if (!actor || clueId === null) return null;
+      try {
+        return await actor.getClue(clueId);
+      } catch (error: any) {
+        console.error('Get clue error:', error);
+        if (error.message?.includes('not found')) {
+          return null;
+        }
+        throw error;
+      }
     },
-    enabled: !!actor && !isFetching && !!id,
+    enabled: !!actor && !isFetching && clueId !== null,
+    retry: false,
   });
 }
 
@@ -69,21 +41,9 @@ export function useCreateClue() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (clue: { id: string; title: string; content: string }) => {
+    mutationFn: async (clue: string) => {
       if (!actor) throw new Error('Actor not initialized');
-      // Backend method not yet implemented
-      // When backend is ready: return actor.createClue(clue.id, clue.title, clue.content);
-      
-      // Simulate backend call
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
-      // Add to mock data
-      mockClues.push({
-        ...clue,
-        createdAt: BigInt(Date.now() * 1000000),
-      });
-      
-      return { success: true };
+      return actor.createClue(clue);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['clues'] });
@@ -96,21 +56,9 @@ export function useDeleteClue() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (id: string) => {
+    mutationFn: async (clueId: bigint) => {
       if (!actor) throw new Error('Actor not initialized');
-      // Backend method not yet implemented
-      // When backend is ready: return actor.deleteClue(id);
-      
-      // Simulate backend call
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
-      // Remove from mock data
-      const index = mockClues.findIndex(c => c.id === id);
-      if (index > -1) {
-        mockClues.splice(index, 1);
-      }
-      
-      return { success: true };
+      return actor.deleteClue(clueId);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['clues'] });

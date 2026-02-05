@@ -9,8 +9,18 @@ import { Textarea } from '@/components/ui/textarea';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Separator } from '@/components/ui/separator';
-import { LogIn, LogOut, Plus, Trash2, AlertCircle, CheckCircle2, Info } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { LogIn, LogOut, Plus, Trash2, AlertCircle, CheckCircle2, ShieldAlert, Image } from 'lucide-react';
 import { toast } from 'sonner';
+import { RichClueContent } from '../components/RichClueContent';
+
+// OWNER ALLOWLIST: Add your principal ID here to grant admin access
+// To find your principal: log in and check the console or the authenticated alert below
+const OWNER_PRINCIPALS: string[] = [
+  // Add your principal IDs here, e.g.:
+  // '2vxsx-fae',
+  // 'xxxxx-xxxxx-xxxxx-xxxxx-xxx',
+];
 
 export function AdminPage() {
   const { identity, login, clear, loginStatus, isLoginSuccess } = useInternetIdentity();
@@ -18,38 +28,52 @@ export function AdminPage() {
   const createClue = useCreateClue();
   const deleteClue = useDeleteClue();
 
-  const [newClue, setNewClue] = useState({ id: '', title: '', content: '' });
+  const [newClue, setNewClue] = useState('');
+
+  // Check if logged-in user is the owner
+  const userPrincipal = identity?.getPrincipal().toString();
+  const isOwner = userPrincipal && OWNER_PRINCIPALS.includes(userPrincipal);
 
   const handleCreateClue = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newClue.id || !newClue.title || !newClue.content) {
-      toast.error('All fields are required');
+    if (!newClue.trim()) {
+      toast.error('Clue content is required');
       return;
     }
 
     try {
       await createClue.mutateAsync(newClue);
-      setNewClue({ id: '', title: '', content: '' });
-      toast.success('Clue created successfully (mock data - backend not yet implemented)');
-    } catch (error) {
-      toast.error('Failed to create clue');
+      setNewClue('');
+      toast.success('Clue created successfully');
+    } catch (error: any) {
+      console.error('Create clue error:', error);
+      if (error.message?.includes('Unauthorized')) {
+        toast.error('Access denied: Only the owner can create clues');
+      } else {
+        toast.error('Failed to create clue');
+      }
     }
   };
 
-  const handleDeleteClue = async (id: string) => {
-    if (!confirm(`Are you sure you want to delete the clue "${id}"?`)) {
+  const handleDeleteClue = async (id: bigint) => {
+    if (!confirm(`Are you sure you want to delete clue #${id}?`)) {
       return;
     }
 
     try {
       await deleteClue.mutateAsync(id);
-      toast.success('Clue deleted successfully (mock data - backend not yet implemented)');
-    } catch (error) {
-      toast.error('Failed to delete clue');
+      toast.success('Clue deleted successfully');
+    } catch (error: any) {
+      console.error('Delete clue error:', error);
+      if (error.message?.includes('Unauthorized')) {
+        toast.error('Access denied: Only the owner can delete clues');
+      } else {
+        toast.error('Failed to delete clue');
+      }
     }
   };
 
-  // Not logged in
+  // Not logged in - show login prompt
   if (!isLoginSuccess) {
     return (
       <div className="container mx-auto px-4 py-16">
@@ -66,7 +90,7 @@ export function AdminPage() {
                 <AlertCircle className="h-4 w-4" />
                 <AlertTitle>Authentication Required</AlertTitle>
                 <AlertDescription>
-                  Only authorized administrators can add or delete clues. The site remains publicly viewable.
+                  Only the site owner can add or delete clues. The public site remains viewable without login.
                 </AlertDescription>
               </Alert>
               <Button
@@ -85,6 +109,51 @@ export function AdminPage() {
     );
   }
 
+  // Logged in but not owner - show access denied
+  if (!isOwner) {
+    return (
+      <div className="container mx-auto px-4 py-16">
+        <div className="mx-auto max-w-md space-y-6">
+          <Card className="border-2 border-destructive">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-destructive">
+                <ShieldAlert className="h-5 w-5" />
+                Access Denied
+              </CardTitle>
+              <CardDescription>
+                You do not have permission to access this area
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <Alert variant="destructive">
+                <ShieldAlert className="h-4 w-4" />
+                <AlertTitle>Owner Access Only</AlertTitle>
+                <AlertDescription>
+                  This admin portal is restricted to the site owner. Your principal ID is not in the allowlist.
+                </AlertDescription>
+              </Alert>
+              
+              <div className="rounded-lg bg-muted p-4">
+                <p className="text-xs font-medium text-muted-foreground mb-2">Your Principal ID:</p>
+                <code className="block break-all rounded bg-background px-3 py-2 text-xs font-mono">
+                  {userPrincipal}
+                </code>
+              </div>
+
+              <div className="flex gap-2">
+                <Button variant="outline" onClick={clear} className="flex-1">
+                  <LogOut className="mr-2 h-4 w-4" />
+                  Logout
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
+  // Owner authenticated - show admin interface
   return (
     <div className="container mx-auto px-4 py-16">
       <div className="mx-auto max-w-5xl space-y-8">
@@ -105,19 +174,9 @@ export function AdminPage() {
         {/* Identity Info */}
         <Alert>
           <CheckCircle2 className="h-4 w-4" />
-          <AlertTitle>Authenticated</AlertTitle>
+          <AlertTitle>Authenticated as Owner</AlertTitle>
           <AlertDescription className="font-mono text-xs">
-            {identity?.getPrincipal().toString()}
-          </AlertDescription>
-        </Alert>
-
-        {/* Backend Notice */}
-        <Alert>
-          <Info className="h-4 w-4" />
-          <AlertTitle>Development Mode</AlertTitle>
-          <AlertDescription>
-            Backend methods are not yet implemented. Currently using mock data for demonstration.
-            Changes will not persist across page reloads.
+            {userPrincipal}
           </AlertDescription>
         </Alert>
 
@@ -129,52 +188,67 @@ export function AdminPage() {
               Create New Clue
             </CardTitle>
             <CardDescription>
-              Add a new clue that users can discover by visiting its URL
+              Add a new clue that users can discover
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleCreateClue} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="clue-id">Clue ID (URL path)</Label>
-                <Input
-                  id="clue-id"
-                  placeholder="e.g., first-clue, hidden-message"
-                  value={newClue.id}
-                  onChange={(e) => setNewClue({ ...newClue, id: e.target.value })}
-                  required
-                />
-                <p className="text-xs text-muted-foreground">
-                  This will be accessible at: /echofields/{newClue.id || '<clue-id>'}
+            <Tabs defaultValue="edit" className="w-full">
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="edit">Edit</TabsTrigger>
+                <TabsTrigger value="preview">Preview</TabsTrigger>
+              </TabsList>
+              
+              <TabsContent value="edit" className="space-y-4">
+                <form onSubmit={handleCreateClue} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="clue-content">Clue Content</Label>
+                    <Textarea
+                      id="clue-content"
+                      placeholder="Enter the clue content..."
+                      value={newClue}
+                      onChange={(e) => setNewClue(e.target.value)}
+                      rows={8}
+                      required
+                    />
+                    <div className="rounded-md bg-muted/50 p-3 text-xs text-muted-foreground">
+                      <div className="flex items-start gap-2">
+                        <Image className="mt-0.5 h-4 w-4 flex-shrink-0" />
+                        <div>
+                          <p className="font-medium">Markdown Image Support</p>
+                          <p className="mt-1">
+                            To embed an image, use: <code className="rounded bg-background px-1 py-0.5">![Alt text](https://example.com/image.jpg)</code>
+                          </p>
+                          <p className="mt-1 text-[11px] opacity-75">
+                            Only http://, https://, and relative URLs are supported for security.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <Button type="submit" disabled={createClue.isPending} className="w-full">
+                    {createClue.isPending ? 'Creating...' : 'Create Clue'}
+                  </Button>
+                </form>
+              </TabsContent>
+              
+              <TabsContent value="preview" className="space-y-4">
+                <div className="rounded-lg border-2 bg-card p-6">
+                  {newClue ? (
+                    <div className="prose prose-neutral dark:prose-invert max-w-none">
+                      <RichClueContent content={newClue} />
+                    </div>
+                  ) : (
+                    <p className="text-sm text-muted-foreground italic">
+                      No content yet. Start typing in the Edit tab to see a preview.
+                    </p>
+                  )}
+                </div>
+                <p className="text-xs text-muted-foreground text-center">
+                  This is how your clue will appear to users
                 </p>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="clue-title">Title</Label>
-                <Input
-                  id="clue-title"
-                  placeholder="Enter clue title"
-                  value={newClue.title}
-                  onChange={(e) => setNewClue({ ...newClue, title: e.target.value })}
-                  required
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="clue-content">Content</Label>
-                <Textarea
-                  id="clue-content"
-                  placeholder="Enter the clue content..."
-                  value={newClue.content}
-                  onChange={(e) => setNewClue({ ...newClue, content: e.target.value })}
-                  rows={6}
-                  required
-                />
-              </div>
-
-              <Button type="submit" disabled={createClue.isPending} className="w-full">
-                {createClue.isPending ? 'Creating...' : 'Create Clue'}
-              </Button>
-            </form>
+              </TabsContent>
+            </Tabs>
           </CardContent>
         </Card>
 
@@ -192,22 +266,22 @@ export function AdminPage() {
             </div>
           ) : clues && clues.length > 0 ? (
             <div className="space-y-4">
-              {clues.map((clue) => (
-                <Card key={clue.id}>
+              {clues.map((clue, index) => (
+                <Card key={index}>
                   <CardHeader>
                     <div className="flex items-start justify-between">
                       <div className="space-y-1">
-                        <CardTitle>{clue.title}</CardTitle>
+                        <CardTitle>Clue #{index + 1}</CardTitle>
                         <CardDescription>
                           <code className="rounded bg-muted px-2 py-1 text-xs">
-                            /echofields/{clue.id}
+                            /echofields/{index + 1}
                           </code>
                         </CardDescription>
                       </div>
                       <Button
                         variant="destructive"
                         size="sm"
-                        onClick={() => handleDeleteClue(clue.id)}
+                        onClick={() => handleDeleteClue(BigInt(index + 1))}
                         disabled={deleteClue.isPending}
                       >
                         <Trash2 className="h-4 w-4" />
@@ -216,7 +290,7 @@ export function AdminPage() {
                   </CardHeader>
                   <CardContent>
                     <p className="line-clamp-3 text-sm text-muted-foreground">
-                      {clue.content}
+                      {clue}
                     </p>
                   </CardContent>
                 </Card>

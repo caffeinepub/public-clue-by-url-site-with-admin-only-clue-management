@@ -1,67 +1,102 @@
+@import url('https://fonts.googleapis.com/css2?family=Michroma&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
-    :root {
-        --radius: 0.5rem;
-        --background: 0.98 0 0;
-        --foreground: 0.15 0 0;
-        --card: 1 0 0;
-        --card-foreground: 0.15 0 0;
-        --popover: 1 0 0;
-        --popover-foreground: 0.15 0 0;
-        --primary: 0.25 0 0;
-        --primary-foreground: 0.98 0 0;
-        --secondary: 0.95 0 0;
-        --secondary-foreground: 0.25 0 0;
-        --muted: 0.96 0 0;
-        --muted-foreground: 0.50 0 0;
-        --accent: 0.65 0.18 150;
-        --accent-foreground: 0.98 0 0;
-        --destructive: 0.55 0.22 25;
-        --destructive-foreground: 0.98 0 0;
-        --border: 0.90 0 0;
-        --input: 0.90 0 0;
-        --ring: 0.65 0.18 150;
-        --chart-1: 0.65 0.20 200;
-        --chart-2: 0.60 0.15 280;
-        --chart-3: 0.70 0.18 150;
-        --chart-4: 0.55 0.20 50;
-        --chart-5: 0.60 0.22 320;
-    }
+  :root {
+    --background: oklch(98% 0.01 240);
+    --foreground: oklch(20% 0.02 240);
+    --card: oklch(100% 0 0);
+    --card-foreground: oklch(20% 0.02 240);
+    --popover: oklch(100% 0 0);
+    --popover-foreground: oklch(20% 0.02 240);
+    --primary: oklch(50% 0.15 200);
+    --primary-foreground: oklch(98% 0.01 200);
+    --secondary: oklch(92% 0.02 240);
+    --secondary-foreground: oklch(20% 0.02 240);
+    --muted: oklch(94% 0.01 240);
+    --muted-foreground: oklch(50% 0.02 240);
+    --accent: oklch(55% 0.18 180);
+    --accent-foreground: oklch(98% 0.01 180);
+    --destructive: oklch(55% 0.22 25);
+    --destructive-foreground: oklch(98% 0.01 25);
+    --border: oklch(88% 0.02 240);
+    --input: oklch(88% 0.02 240);
+    --ring: oklch(50% 0.15 200);
+    --radius: 0.5rem;
+    --chart-1: oklch(60% 0.18 180);
+    --chart-2: oklch(65% 0.16 220);
+    --chart-3: oklch(55% 0.20 160);
+    --chart-4: oklch(70% 0.14 280);
+    --chart-5: oklch(60% 0.22 40);
+    --echofields-green: oklch(65% 0.20 145);
+  }
 
-    .dark {
-        --background: 0.12 0 0;
-        --foreground: 0.95 0 0;
-        --card: 0.16 0 0;
-        --card-foreground: 0.95 0 0;
-        --popover: 0.18 0 0;
-        --popover-foreground: 0.95 0 0;
-        --primary: 0.85 0 0;
-        --primary-foreground: 0.15 0 0;
-        --secondary: 0.22 0 0;
-        --secondary-foreground: 0.95 0 0;
-        --muted: 0.25 0 0;
-        --muted-foreground: 0.65 0 0;
-        --accent: 0.65 0.18 150;
-        --accent-foreground: 0.98 0 0;
-        --destructive: 0.60 0.20 25;
-        --destructive-foreground: 0.15 0 0;
-        --border: 0.30 0 0;
-        --input: 0.30 0 0;
-        --ring: 0.65 0.18 150;
-        --chart-1: 0.65 0.20 200;
-        --chart-2: 0.60 0.15 280;
-        --chart-3: 0.70 0.18 150;
-        --chart-4: 0.55 0.20 50;
-        --chart-5: 0.60 0.22 320;
-    }
+  .dark {
+    --background: oklch(15% 0.02 240);
+    --foreground: oklch(95% 0.01 240);
+    --card: oklch(18% 0.02 240);
+    --card-foreground: oklch(95% 0.01 240);
+    --popover: oklch(18% 0.02 240);
+    --popover-foreground: oklch(95% 0.01 240);
+    --primary: oklch(60% 0.18 200);
+    --primary-foreground: oklch(15% 0.02 200);
+    --secondary: oklch(25% 0.02 240);
+    --secondary-foreground: oklch(95% 0.01 240);
+    --muted: oklch(25% 0.02 240);
+    --muted-foreground: oklch(65% 0.02 240);
+    --accent: oklch(60% 0.20 180);
+    --accent-foreground: oklch(15% 0.02 180);
+    --destructive: oklch(60% 0.24 25);
+    --destructive-foreground: oklch(95% 0.01 25);
+    --border: oklch(30% 0.02 240);
+    --input: oklch(30% 0.02 240);
+    --ring: oklch(60% 0.18 200);
+    --chart-1: oklch(65% 0.20 180);
+    --chart-2: oklch(70% 0.18 220);
+    --chart-3: oklch(60% 0.22 160);
+    --chart-4: oklch(75% 0.16 280);
+    --chart-5: oklch(65% 0.24 40);
+    --echofields-green: oklch(70% 0.22 145);
+  }
+}
 
-    * {
-        @apply border-border;
-    }
-    body {
-        @apply bg-background text-foreground;
-    }
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Intro animation with green color and enhanced zoom/fade */
+@keyframes fadeInZoom {
+  0% {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+  75% {
+    opacity: 1;
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.intro-animation {
+  animation: fadeInZoom 3s ease-in-out;
+}
+
+.echofields-title {
+  font-family: 'Michroma', sans-serif;
+  color: var(--echofields-green);
 }
