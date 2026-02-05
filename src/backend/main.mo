@@ -9,11 +9,9 @@ import Clues "clues";
 
 
 actor {
-  // Initialize the user system state for authorization
+  // Authorization
   let accessControlState = AccessControl.initState();
   include MixinAuthorization(accessControlState);
-
-  var cluesState = Clues.empty();
 
   // User profile type and storage
   public type UserProfile = {
@@ -45,6 +43,8 @@ actor {
   };
 
   // Clue management functions with proper authorization
+  var cluesState = Clues.empty();
+
   public shared ({ caller }) func createClue(clue : Text) : async () {
     if (not (AccessControl.isAdmin(accessControlState, caller))) {
       Runtime.trap("Unauthorized: Only admins can create clues");
@@ -73,3 +73,4 @@ actor {
     cluesState := Clues.deleteClue(cluesState, clueId);
   };
 };
+

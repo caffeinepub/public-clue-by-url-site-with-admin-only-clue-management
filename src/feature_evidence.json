@@ -2,11 +2,48 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-update-the-frontend-so-the-previously-labeled-page-name-public-clue-by-url-is-renamed-to-echofields-everywhere-it-appears-including-any-route-page-labels-headings-navigation-text-and-document-page-titles",
-      "featureTitle": "Update the frontend so the previously labeled page name \"public clue-by-url\" is renamed to \"Echofields\" everywhere it appears, including any route/page labels, headings, navigation text, and document/page titles.",
+      "featureId": "feature-change-frontend-routing-and-clue-loading-so-clues-are-opened-via-the-path-segment-after-echofields-slug-e-g-echofields-something-not-only-numeric-ids",
+      "featureTitle": "Change frontend routing and clue loading so clues are opened via the path segment after `/echofields/` (slug), e.g. `/echofields/something`, not only numeric IDs.",
       "files": [
-        "frontend/index.html",
+        "frontend/src/pages/CluePage.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "authorization@4.0.0"
+      ],
+      "testIds": [
+        "REQ-3"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-display-each-clue-s-title-on-the-clue-page-and-in-any-relevant-lists-labels-using-english-user-facing-text",
+      "featureTitle": "Display each clue’s title on the clue page and in any relevant lists/labels, using English user-facing text.",
+      "files": [
         "frontend/src/pages/AdminPage.tsx",
+        "frontend/src/pages/CluePage.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "authorization@4.0.0"
+      ],
+      "testIds": [
+        "REQ-4"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-implement-start-gating-for-the-first-clue-the-first-clue-must-remain-hidden-until-the-user-presses-a-start-button-on-the-main-echofields-page-if-there-are-zero-clues-the-start-button-must-not-show-and-must-not-function",
+      "featureTitle": "Implement Start gating for the first clue: the first clue must remain hidden until the user presses a Start button on the main (/echofields) page; if there are zero clues, the Start button must not show and must not function.",
+      "files": [
         "frontend/src/pages/CluePage.tsx",
         "frontend/src/pages/Home.tsx"
       ],
@@ -19,7 +56,90 @@
         "authorization@4.0.0"
       ],
       "testIds": [
-        "REQ-1"
+        "REQ-5"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-update-the-clue-navigation-ux-so-that-for-clues-after-the-first-users-can-progress-by-entering-just-the-next-slug-the-word-after-echofields-and-opening-the-corresponding-clue-i-e-construct-echofields-slug-automatically",
+      "featureTitle": "Update the clue navigation UX so that for clues after the first, users can progress by entering just the next slug (the word after `/echofields/`) and opening the corresponding clue (i.e., construct `/echofields/{slug}` automatically).",
+      "files": [
+        "frontend/src/pages/CluePage.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "authorization@4.0.0"
+      ],
+      "testIds": [
+        "REQ-6"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-extend-the-admin-create-clue-workflow-to-include-an-explicit-create-clue-button-that-creates-a-new-clue-tied-to-a-url-slug-and-include-inputs-for-both-slug-and-title",
+      "featureTitle": "Extend the admin create-clue workflow to include an explicit \"Create Clue\" button that creates a new clue tied to a URL slug, and include inputs for both slug and title.",
+      "files": [
+        "frontend/src/pages/AdminPage.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "authorization@4.0.0"
+      ],
+      "testIds": [
+        "REQ-7"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-support-copy-paste-of-videos-images-and-powerpoint-links-into-the-clue-content-area-by-detecting-pasted-urls-and-auto-inserting-the-existing-supported-markup-formats-markdown-image-alt-url-video-video-url-and-ppt-ppt-url",
+      "featureTitle": "Support copy/paste of videos, images, and PowerPoint links into the clue content area by detecting pasted URLs and auto-inserting the existing supported markup formats: Markdown image `![alt](url)`, video `{{video:url}}`, and PPT `{{ppt:url}}`.",
+      "files": [
+        "frontend/src/pages/AdminPage.tsx",
+        "frontend/src/utils/pasteRichMedia.ts"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "authorization@4.0.0"
+      ],
+      "testIds": [
+        "REQ-8"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-apply-a-windows-aero-inspired-visual-theme-consistently-across-the-website-home-clue-pages-admin-portal-including-glass-like-surfaces-soft-gradients-and-appropriate-blur-transparency-while-keeping-text-readable-in-both-light-and-dark-modes",
+      "featureTitle": "Apply a Windows Aero-inspired visual theme consistently across the website (home, clue pages, admin portal), including glass-like surfaces, soft gradients, and appropriate blur/transparency while keeping text readable in both light and dark modes.",
+      "files": [
+        "frontend/src/components/Footer.tsx",
+        "frontend/src/components/Header.tsx",
+        "frontend/src/index.css",
+        "frontend/src/pages/AdminPage.tsx",
+        "frontend/src/pages/CluePage.tsx",
+        "frontend/src/pages/Home.tsx",
+        "frontend/tailwind.config.js"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "authorization@4.0.0"
+      ],
+      "testIds": [
+        "REQ-9"
       ],
       "confidence": "high"
     }

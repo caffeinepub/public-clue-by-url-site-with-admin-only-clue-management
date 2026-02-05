@@ -1,27 +1,125 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-05T14:53:35.018Z",
+  "generatedAt": "2026-02-05T16:00:06.988Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 1,
-    "implemented": 1,
+    "total": 9,
+    "implemented": 7,
     "items": [
       {
         "id": "REQ-1",
-        "summary": "Update the frontend so the previously labeled page name \"public clue-by-url\" is renamed to \"Echofields\" everywhere it appears, including any route/page labels, headings, navigation text, and document/page titles.",
+        "summary": "Update the clue data model and APIs to support: (a) a human-readable URL path segment (\"slug\") per clue, (b) a title per clue, and (c) rich content per clue, while preserving existing clue order so there is a well-defined \"first clue\".",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
+      },
+      {
+        "id": "REQ-2",
+        "summary": "Add conditional state migration so existing deployed clue data (currently stored as plain Text per incremental Nat ID) is preserved when upgrading to the new clue record format.",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
+      },
+      {
+        "id": "REQ-3",
+        "summary": "Change frontend routing and clue loading so clues are opened via the path segment after `/echofields/` (slug), e.g. `/echofields/something`, not only numeric IDs.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/index.html",
+          "frontend/src/App.tsx",
+          "frontend/src/hooks/useQueries.ts",
+          "frontend/src/pages/CluePage.tsx",
+          "frontend/src/backend.d.ts"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/CluePage.tsx"
+        ]
+      },
+      {
+        "id": "REQ-4",
+        "summary": "Display each clue’s title on the clue page and in any relevant lists/labels, using English user-facing text.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/CluePage.tsx",
+          "frontend/src/pages/AdminPage.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/CluePage.tsx",
+          "frontend/src/pages/AdminPage.tsx"
+        ]
+      },
+      {
+        "id": "REQ-5",
+        "summary": "Implement Start gating for the first clue: the first clue must remain hidden until the user presses a Start button on the main (/echofields) page; if there are zero clues, the Start button must not show and must not function.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/Home.tsx",
+          "frontend/src/pages/CluePage.tsx",
+          "frontend/src/utils/urlParams.ts"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/Home.tsx",
+          "frontend/src/pages/CluePage.tsx"
+        ]
+      },
+      {
+        "id": "REQ-6",
+        "summary": "Update the clue navigation UX so that for clues after the first, users can progress by entering just the next slug (the word after `/echofields/`) and opening the corresponding clue (i.e., construct `/echofields/{slug}` automatically).",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/CluePage.tsx",
+          "frontend/src/utils/safeUrl.ts"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/CluePage.tsx"
+        ]
+      },
+      {
+        "id": "REQ-7",
+        "summary": "Extend the admin create-clue workflow to include an explicit \"Create Clue\" button that creates a new clue tied to a URL slug, and include inputs for both slug and title.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/AdminPage.tsx",
+          "frontend/src/hooks/useQueries.ts"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/AdminPage.tsx"
+        ]
+      },
+      {
+        "id": "REQ-8",
+        "summary": "Support copy/paste of videos, images, and PowerPoint links into the clue content area by detecting pasted URLs and auto-inserting the existing supported markup formats: Markdown image `![alt](url)`, video `{{video:url}}`, and PPT `{{ppt:url}}`.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/utils/pasteRichMedia.ts",
+          "frontend/src/pages/AdminPage.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/utils/pasteRichMedia.ts",
+          "frontend/src/pages/AdminPage.tsx"
+        ]
+      },
+      {
+        "id": "REQ-9",
+        "summary": "Apply a Windows Aero-inspired visual theme consistently across the website (home, clue pages, admin portal), including glass-like surfaces, soft gradients, and appropriate blur/transparency while keeping text readable in both light and dark modes.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/index.css",
+          "frontend/tailwind.config.js",
+          "frontend/src/components/Header.tsx",
+          "frontend/src/components/Footer.tsx",
           "frontend/src/pages/Home.tsx",
           "frontend/src/pages/CluePage.tsx",
           "frontend/src/pages/AdminPage.tsx"
         ],
         "matchedFiles": [
-          "frontend/index.html",
+          "frontend/src/index.css",
+          "frontend/tailwind.config.js",
+          "frontend/src/components/Header.tsx",
+          "frontend/src/components/Footer.tsx",
           "frontend/src/pages/Home.tsx",
           "frontend/src/pages/CluePage.tsx",
           "frontend/src/pages/AdminPage.tsx"
@@ -30,15 +128,20 @@
     ]
   },
   "changedFiles": [
+    "backend/main.mo",
     "build-request.json",
-    "caffeine.lock.json",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/index.html",
+    "frontend/src/components/Footer.tsx",
+    "frontend/src/components/Header.tsx",
+    "frontend/src/index.css",
     "frontend/src/pages/AdminPage.tsx",
     "frontend/src/pages/CluePage.tsx",
     "frontend/src/pages/Home.tsx",
+    "frontend/src/utils/pasteRichMedia.ts",
+    "frontend/src/utils/sessionGating.ts",
+    "frontend/tailwind.config.js",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

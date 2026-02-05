@@ -32,6 +32,12 @@
     --chart-4: oklch(70% 0.14 280);
     --chart-5: oklch(60% 0.22 40);
     --echofields-green: oklch(65% 0.20 145);
+    
+    /* Windows Aero glass theme tokens */
+    --aero-glass-bg: oklch(95% 0.01 220 / 0.7);
+    --aero-glass-border: oklch(85% 0.03 220 / 0.5);
+    --aero-glass-highlight: oklch(100% 0 0 / 0.4);
+    --aero-glass-shadow: oklch(40% 0.02 220 / 0.15);
   }
 
   .dark {
@@ -60,6 +66,12 @@
     --chart-4: oklch(75% 0.16 280);
     --chart-5: oklch(65% 0.24 40);
     --echofields-green: oklch(70% 0.22 145);
+    
+    /* Windows Aero glass theme tokens - dark mode */
+    --aero-glass-bg: oklch(20% 0.02 220 / 0.6);
+    --aero-glass-border: oklch(35% 0.03 220 / 0.5);
+    --aero-glass-highlight: oklch(40% 0.02 220 / 0.3);
+    --aero-glass-shadow: oklch(10% 0.02 220 / 0.3);
   }
 }
 
@@ -95,4 +107,42 @@
 .echofields-title {
   font-family: 'Michroma', sans-serif;
   color: var(--echofields-green);
+}
+
+/* Windows Aero glassmorphism utilities */
+@layer utilities {
+  .aero-glass {
+    background: var(--aero-glass-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--aero-glass-border);
+    box-shadow: 
+      0 8px 32px var(--aero-glass-shadow),
+      inset 0 1px 0 var(--aero-glass-highlight);
+  }
+  
+  .aero-glass-strong {
+    background: var(--aero-glass-bg);
+    backdrop-filter: blur(30px) saturate(150%);
+    -webkit-backdrop-filter: blur(30px) saturate(150%);
+    border: 1px solid var(--aero-glass-border);
+    box-shadow: 
+      0 12px 40px var(--aero-glass-shadow),
+      inset 0 1px 0 var(--aero-glass-highlight),
+      inset 0 -1px 0 oklch(0% 0 0 / 0.1);
+  }
+  
+  .aero-button {
+    background: linear-gradient(
+      to bottom,
+      var(--aero-glass-highlight),
+      var(--aero-glass-bg)
+    );
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid var(--aero-glass-border);
+    box-shadow: 
+      0 4px 16px var(--aero-glass-shadow),
+      inset 0 1px 0 var(--aero-glass-highlight);
+  }
 }

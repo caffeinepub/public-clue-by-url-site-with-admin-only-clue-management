@@ -56,6 +56,14 @@ export default {
         echofields: {
           green: 'var(--echofields-green)',
         },
+        aero: {
+          glass: {
+            bg: 'var(--aero-glass-bg)',
+            border: 'var(--aero-glass-border)',
+            highlight: 'var(--aero-glass-highlight)',
+            shadow: 'var(--aero-glass-shadow)',
+          },
+        },
       },
       keyframes: {
         fadeInZoom: {
@@ -76,9 +84,21 @@ export default {
             transform: 'scale(1)',
           },
         },
+        shimmer: {
+          '0%': {
+            backgroundPosition: '-200% 0',
+          },
+          '100%': {
+            backgroundPosition: '200% 0',
+          },
+        },
       },
       animation: {
         fadeInZoom: 'fadeInZoom 3s ease-in-out',
+        shimmer: 'shimmer 3s ease-in-out infinite',
+      },
+      backgroundImage: {
+        'aero-gradient': 'linear-gradient(135deg, var(--aero-glass-highlight), var(--aero-glass-bg))',
       },
     },
   },

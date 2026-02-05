@@ -2,8 +2,9 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from '@tanstack/react-router';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Lock, Map, Search, ArrowRight } from 'lucide-react';
+import { Lock, Map, Search, Play } from 'lucide-react';
 import { useListClues } from '../hooks/useQueries';
+import { markStarted } from '../utils/sessionGating';
 
 export function Home() {
   const [showIntro, setShowIntro] = useState(false);
@@ -34,6 +35,11 @@ export function Home() {
 
   const hasClues = clues && clues.length > 0;
 
+  const handleStart = () => {
+    markStarted();
+    navigate({ to: '/echofields/$clueId', params: { clueId: '1' } });
+  };
+
   if (showIntro && !introComplete) {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-background">
@@ -60,24 +66,24 @@ export function Home() {
           </p>
         </div>
 
-        {/* First Clue CTA - Only show if clues exist */}
+        {/* Start Button - Only show if clues exist */}
         {hasClues && (
           <div className="flex justify-center">
-            <Card className="border-2 border-echofields-green/30 bg-gradient-to-br from-echofields-green/5 to-transparent">
+            <Card className="aero-glass-strong border-2 border-echofields-green/30 shadow-xl">
               <CardHeader className="text-center">
                 <CardTitle className="text-2xl">Ready to Begin?</CardTitle>
                 <CardDescription>
-                  Start your journey with the first clue
+                  Press Start to reveal the first clue
                 </CardDescription>
               </CardHeader>
               <CardContent className="flex justify-center">
                 <Button
                   size="lg"
-                  onClick={() => navigate({ to: '/echofields/$clueId', params: { clueId: '1' } })}
-                  className="bg-echofields-green hover:bg-echofields-green/90 text-white"
+                  onClick={handleStart}
+                  className="aero-button bg-echofields-green hover:bg-echofields-green/90 text-white font-semibold px-8 py-6 text-lg transition-all hover:scale-105"
                 >
-                  View First Clue
-                  <ArrowRight className="ml-2 h-5 w-5" />
+                  <Play className="mr-2 h-6 w-6 fill-current" />
+                  Start
                 </Button>
               </CardContent>
             </Card>
@@ -86,7 +92,7 @@ export function Home() {
 
         {/* Feature Cards */}
         <div className="grid gap-6 md:grid-cols-3">
-          <Card className="border-2">
+          <Card className="aero-glass border-2 transition-all hover:scale-105">
             <CardHeader>
               <div className="mb-2 flex h-12 w-12 items-center justify-center rounded-lg bg-accent/10">
                 <Search className="h-6 w-6 text-accent" />
@@ -98,7 +104,7 @@ export function Home() {
             </CardHeader>
           </Card>
 
-          <Card className="border-2">
+          <Card className="aero-glass border-2 transition-all hover:scale-105">
             <CardHeader>
               <div className="mb-2 flex h-12 w-12 items-center justify-center rounded-lg bg-accent/10">
                 <Map className="h-6 w-6 text-accent" />
@@ -110,7 +116,7 @@ export function Home() {
             </CardHeader>
           </Card>
 
-          <Card className="border-2">
+          <Card className="aero-glass border-2 transition-all hover:scale-105">
             <CardHeader>
               <div className="mb-2 flex h-12 w-12 items-center justify-center rounded-lg bg-accent/10">
                 <Lock className="h-6 w-6 text-accent" />
@@ -124,12 +130,12 @@ export function Home() {
         </div>
 
         {/* Instructions */}
-        <div className="space-y-4 rounded-lg bg-muted/30 p-6">
+        <div className="space-y-4 rounded-lg aero-glass p-6">
           <h3 className="text-lg font-semibold">How It Works</h3>
           <ol className="space-y-2 text-muted-foreground">
             <li className="flex gap-3">
               <span className="font-semibold text-foreground">1.</span>
-              <span>Visit a clue URL like <code className="rounded bg-muted px-2 py-1 text-sm">/echofields/1</code></span>
+              <span>Press the Start button to begin your journey</span>
             </li>
             <li className="flex gap-3">
               <span className="font-semibold text-foreground">2.</span>
