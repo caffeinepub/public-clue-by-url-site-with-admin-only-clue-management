@@ -1,0 +1,33 @@
+{
+  "kind": "implementation_plan",
+  "version": "1.0",
+  "title": "Prefix public and admin routes with /echofields",
+  "requirements": [
+    {
+      "id": "REQ-6",
+      "summary": "Move all public clue/progress routes and admin management routes under an /echofields base path while preserving URL-based progression and keeping admin protected by Internet Identity.",
+      "acceptanceCriteria": [
+        "Visiting a public clue URL under the \"echofields\" base path (e.g., /echofields/<clue-id>) renders the same clue content that would otherwise be shown for that clue.",
+        "Admin pages are reachable under a route that includes \"echofields\" and still require Internet Identity authentication for admin actions.",
+        "No public clue/progress pages are exposed at the old top-level routes if they would omit \"echofields\" (either redirect to the new routes or only register the new routes)."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "create",
+          "description": "Implement the app's route table so that all public clue/progress routes and all admin routes are registered under the \"/echofields\" base path (e.g., \"/echofields/:clueId\", \"/echofields/progress\", \"/echofields/admin\"). Preserve the existing URL-param driven clue/progress behavior by keeping the same route params and route-to-view mapping, just nested beneath the new base path. Ensure old top-level public routes that omit \"echofields\" are not exposed by either not registering them or by redirecting them to the corresponding \"/echofields/...\" route."
+        },
+        {
+          "path": "frontend/src/components/EchofieldsAdminGuard.tsx",
+          "operation": "create",
+          "description": "Add a small route-guard wrapper for admin routes that uses the existing Internet Identity hook (frontend/src/hooks/useInternetIdentity.ts) to require an authenticated identity before rendering admin management UI, and otherwise prompts the user to log in. Wire this guard into the admin route branch under \"/echofields/admin\"."
+        },
+        {
+          "path": "frontend/src/main.tsx",
+          "operation": "modify",
+          "description": "Update the app bootstrap to ensure the new App router (with the \"/echofields\" base path and any legacy-route redirects) is the single routing entry point used by the application, so old top-level public clue/progress URLs do not remain reachable."
+        }
+      ]
+    }
+  ]
+}

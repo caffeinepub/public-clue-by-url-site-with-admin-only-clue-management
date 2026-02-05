@@ -1,0 +1,37 @@
+{
+  "kind": "build_request",
+  "title": "Include 'echofields' in public and admin URLs",
+  "priority": "normal",
+  "requirements": [
+    {
+      "id": "REQ-6",
+      "text": "Update the frontend routing so that all public clue/progress pages are accessible under a base path that includes the word \"echofields\" (for example: \"/echofields/...\"), without breaking the existing URL-based progression behavior. Ensure any admin management area routes also include \"echofields\" in their path (for example: \"/echofields/admin\").",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-20"
+        ],
+        "quotes": [
+          "can u include the words 'echofields' in the url?"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Visiting a public clue URL under the \"echofields\" base path (e.g., /echofields/<clue-id>) renders the same clue content that would otherwise be shown for that clue.",
+        "Admin pages are reachable under a route that includes \"echofields\" and still require Internet Identity authentication for admin actions.",
+        "No public clue/progress pages are exposed at the old top-level routes if they would omit \"echofields\" (either redirect to the new routes or only register the new routes)."
+      ]
+    }
+  ],
+  "constraints": [
+    "Do not modify any files under frontend/src/components/ui or other immutablePaths listed in SYSTEM_CONTEXT.",
+    "Keep the backend as a single Motoko actor (all logic in backend/main.mo)."
+  ],
+  "nonGoals": [
+    "Purchasing/configuring a custom domain name containing \"echofields\" (only in-app routes/base paths are in scope).",
+    "Changing the clue content model or admin authorization model beyond what is necessary to support the new URL path structure."
+  ],
+  "imageRequirements": {
+    "required": [],
+    "edits": []
+  }
+}

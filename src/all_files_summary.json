@@ -1,0 +1,20 @@
+{
+  "backend/main.mo": "Empty Motoko actor serving as a placeholder backend canister.",
+  "feature_evidence.json": "Feature evidence record describing routing changes requiring all public and admin pages to live under /echofields, including referenced frontend files.",
+  "frontend-file-summaries.txt": "Prewritten summaries of major frontend files describing routing, pages, components, hooks, and entry setup.",
+  "frontend/index.css": "Tailwind and OKLCH-based global styles defining light/dark theme variables and base element styling.",
+  "frontend/index.html": "Basic HTML shell mounting the React app and loading main.tsx.",
+  "frontend/src/App.tsx": "Defines TanStack Router routes all under /echofields with a root redirect and layout including header, footer, and theming.",
+  "frontend/src/components/Footer.tsx": "Footer component showing attribution and a link to caffeine.ai with icons.",
+  "frontend/src/components/Header.tsx": "Header with site branding and conditional navigation to the /echofields/admin page.",
+  "frontend/src/hooks/useActor.ts": "Hook that creates and manages an authenticated or anonymous backend actor and invalidates dependent queries on changes.",
+  "frontend/src/hooks/useInternetIdentity.ts": "React context and provider managing Internet Identity authentication, status, and stored identities.",
+  "frontend/src/hooks/useQueries.ts": "React Query hooks for listing, fetching, creating, and deleting clues using mock data until backend methods exist.",
+  "frontend/src/index.css": "Alternate Tailwind/OKLCH theme definitions for global styles with light/dark mode support.",
+  "frontend/src/main.tsx": "App entry point initializing QueryClient, InternetIdentityProvider, global styles, and rendering App.",
+  "frontend/src/pages/AdminPage.tsx": "Admin interface that handles Internet Identity login and provides forms to create and delete clues using query hooks. Shows login prompt when unauthenticated and full management UI when logged in.",
+  "frontend/src/pages/CluePage.tsx": "Loads and displays a single clue based on the URL parameter, showing loading and not-found states. Provides navigation back to the main Echofields page.",
+  "frontend/src/pages/Home.tsx": "Public landing page introducing the Echofields experience with feature cards and instructions. Includes a CTA linking to the admin portal.",
+  "frontend/tailwind.config.js": "Tailwind CSS configuration extending theme colors, radii, shadows, animations, and enabling plugins for typography, container queries, and animations.",
+  "project_state.json": "Project metadata describing implemented and pending feature requests for a clue-based site with admin management and URL-driven progression."
+}

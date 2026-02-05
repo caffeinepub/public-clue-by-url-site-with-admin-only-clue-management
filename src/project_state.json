@@ -1,0 +1,96 @@
+{
+  "schemaVersion": "1.0.0",
+  "projectStateVersion": 5,
+  "summary": "Website with admin-only authorized access to manage clues, publicly viewable pages, and user progression via changing the URL.",
+  "existing_features": [
+    {
+      "id": "feature-update-the-frontend-routing-so-that-all-public-clue-progress-pages-are-accessible-under-a-base-path-that-includes-the-word-echofields-for-example-echofields-without-breaking-the-existing-url-based-progression-behavior-ensure-any-admin-management-area-routes-also-include-echofields-in-their-path-for-example-echofields-admin",
+      "title": "Update the frontend routing so that all public clue/progress pages are accessible under a base path that includes the word \"echofields\" (for example: \"/echofields/...\"), without breaking the existing URL-based progression behavior. Ensure any admin management area routes also include \"echofields\" in their path (for example: \"/echofields/admin\").",
+      "reqIds": [
+        "REQ-6"
+      ],
+      "version": 1
+    }
+  ],
+  "new_feature_requests": [
+    {
+      "id": "AR-1",
+      "summary": "Admin/authenticated access for managing site content (authorized access for owner/admin)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-2",
+      "summary": "Publicly viewable clue/progress pages accessible to anyone without login",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-3",
+      "summary": "Progression mechanism where users advance by changing/visiting specific URLs (URL-based navigation/progression)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-4",
+      "summary": "Admin can add/delete (manage) clues whenever (clue CRUD management)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-5",
+      "summary": "Implement admin-only authorized access using Internet Identity so that only the admin can manage (create/delete) clues, while the rest of the site remains publicly viewable without login.",
+      "reqIds": [
+        "REQ-1"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-6",
+      "summary": "Create a backend data model and persistence for clues that supports listing clues and reading a clue by a URL-safe identifier, and supports admin-only create and delete operations at any time.",
+      "reqIds": [
+        "REQ-2"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-7",
+      "summary": "Implement public clue/progress pages where users progress by visiting/changing the URL (e.g., visiting a specific clue URL loads the corresponding clue content).",
+      "reqIds": [
+        "REQ-3"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-8",
+      "summary": "Add an admin management area to add and delete clues, designed to be easy to use (simple form + list with delete controls).",
+      "reqIds": [
+        "REQ-4"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-9",
+      "summary": "Apply a cohesive visual theme across the site (colors, typography, spacing, and layout) suitable for a clue/progress website, avoiding a blue/purple default look, and keep styling consistent across public pages and the admin area.",
+      "reqIds": [
+        "REQ-5"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-10",
+      "summary": "Include the words 'echofields' in the website URL (e.g., as part of the domain or base path for clue/progress URLs)",
+      "reqIds": [],
+      "status": "pending"
+    }
+  ],
+  "architectural_notes": [
+    "Decide how to incorporate 'echofields' into the public URL structure (domain/subdomain vs base path prefix) so all clue/progress routes include it."
+  ],
+  "known_issues": [],
+  "isFixRequest": false,
+  "gameProjectType": "none",
+  "projectName": "Public clue-by-URL site with admin-only clue management",
+  "clarification_mode": "instant",
+  "clarification_rounds": 0
+}
