@@ -1,198 +1,31 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Slug-based clue routing, Start gating, rich paste helpers, and Windows Aero theme (frontend)",
+  "title": "Spectate Portal: Make Create Clue submission reliable with immediate list update and clear feedback",
   "requirements": [
     {
-      "id": "REQ-3",
-      "summary": "Update routing and clue loading to use slug path segment after /echofields/ and fetch clues by slug.",
+      "id": "REQ-2",
+      "summary": "Ensure Create Clue submission consistently creates a clue, refreshes the Existing Clues list automatically, and shows clear success/error toasts with debug logging.",
       "acceptanceCriteria": [
-        "The route `/echofields/$clueId` is updated to accept a slug value (string) and fetch the clue by slug.",
-        "Visiting `/echofields/something` loads and displays the clue associated with slug `something` if it exists.",
-        "If the slug does not exist, the page shows a clear \"Clue Not Found\" error (English) without crashing."
+        "Submitting the Create Clue form creates a new clue and the new clue appears in the \"Existing Clues\" list without requiring a manual refresh.",
+        "On success, the form fields reset and a success toast is shown.",
+        "On failure (e.g., Unauthorized or validation errors), an error toast is shown with an English, human-readable message and the error is logged to the console for debugging."
       ],
       "file_operations": [
-        {
-          "path": "frontend/src/App.tsx",
-          "operation": "modify",
-          "description": "Change the dynamic clue route from `/echofields/$clueId` to a slug param (e.g., `/echofields/$slug`) and ensure CluePage is wired to the updated route."
-        },
         {
           "path": "frontend/src/hooks/useQueries.ts",
           "operation": "modify",
-          "description": "Replace numeric clue fetching with slug-based clue fetching and update the list hook to return structured clue metadata needed by UI (stable order preserved by backend)."
-        },
-        {
-          "path": "frontend/src/pages/CluePage.tsx",
-          "operation": "modify",
-          "description": "Update param handling from numeric parsing to slug string usage, load clue data by slug via updated query hook, and keep the existing \"Clue Not Found\" error state for missing slugs."
-        },
-        {
-          "path": "frontend/src/backend.d.ts",
-          "operation": "modify",
-          "description": "Update the frontend backend interface typings to reflect slug-based clue fetch and structured clue data returned by list/get methods."
-        }
-      ]
-    },
-    {
-      "id": "REQ-4",
-      "summary": "Show each clue’s title prominently on clue pages and in admin lists/labels.",
-      "acceptanceCriteria": [
-        "CluePage shows the clue title prominently (e.g., as the CardTitle) instead of only \"Clue #...\".",
-        "Admin clue list shows each clue’s title alongside its slug/path.",
-        "No user-facing labels for title are left blank when title exists."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/pages/CluePage.tsx",
-          "operation": "modify",
-          "description": "Render the clue title prominently in the main clue card (and update document title to include the clue title when available), using English labels."
+          "description": "Harden the createClue mutation to reliably update UI state: after a successful create, proactively refetch clue summaries (and first-available clue) rather than only invalidating, so the new clue appears immediately without manual refresh; ensure errors are surfaced consistently for the UI to toast and continue logging to console."
         },
         {
           "path": "frontend/src/pages/AdminPage.tsx",
           "operation": "modify",
-          "description": "Update the existing clue list UI to display each clue’s title alongside its slug/path (e.g., `/echofields/{slug}`) using the structured clue list data."
-        }
-      ]
-    },
-    {
-      "id": "REQ-5",
-      "summary": "Implement Start gating so the first clue is hidden until Start is pressed on /echofields, with no Start button when zero clues exist.",
-      "acceptanceCriteria": [
-        "On `/echofields`, a single Start button is shown only when at least one clue exists.",
-        "When there are zero clues, the Start button is not rendered and there is no other CTA that navigates to the first clue.",
-        "Pressing Start sets a session-scoped flag (e.g., sessionStorage) that allows viewing the first clue for that browser session.",
-        "If a user tries to open the first clue directly without pressing Start in that session, the clue content is not shown; instead show a locked/prompt state with a button/link back to the home page to press Start.",
-        "Non-first clues are not blocked by the Start gating."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/pages/Home.tsx",
-          "operation": "modify",
-          "description": "Replace the current first-clue CTA with a single \"Start\" button that only renders when at least one clue exists; on click, set a sessionStorage flag and navigate to the first clue’s slug from the ordered clue list."
+          "description": "Improve Create Clue form submission UX reliability: prevent accidental double-submits while pending, standardize success/failure toast messaging, and ensure failures produce a human-readable message while logging the full error object to the console for debugging. Keep all changes within this page and do not edit immutable ui component files."
         },
         {
-          "path": "frontend/src/pages/CluePage.tsx",
-          "operation": "modify",
-          "description": "Add a gated/locked UI state for the first clue when the session Start flag is not set; allow normal rendering for non-first clues, and include a clear button/link back to `/echofields`."
-        },
-        {
-          "path": "frontend/src/utils/urlParams.ts",
-          "operation": "modify",
-          "description": "Add small helpers (or reuse existing helpers) for reading/writing the session-scoped Start gating flag to keep storage access consistent across Home and CluePage."
-        }
-      ]
-    },
-    {
-      "id": "REQ-6",
-      "summary": "Allow progressing by entering just the next slug (or an internal path) on CluePage, while preserving safe handling for external URLs.",
-      "acceptanceCriteria": [
-        "CluePage provides an input that accepts a slug value (e.g., \"something\") and navigates to `/echofields/something` on submit.",
-        "The UI still supports pasting a full internal path like `/echofields/something` (and navigates correctly).",
-        "Entering an external URL continues to be validated and opened in a new tab when allowed by existing URL safety rules."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/pages/CluePage.tsx",
-          "operation": "modify",
-          "description": "Update the navigation control to accept a raw slug (single segment) and convert it to an internal `/echofields/{slug}` navigation; continue to accept `/echofields/{slug}` directly and preserve the existing safe external URL validation/open-in-new-tab behavior."
-        },
-        {
-          "path": "frontend/src/utils/safeUrl.ts",
-          "operation": "modify",
-          "description": "Extend URL helpers to support recognizing and normalizing internal clue paths and slug-only inputs without weakening existing external URL safety checks."
-        }
-      ]
-    },
-    {
-      "id": "REQ-7",
-      "summary": "Extend admin create-clue workflow with Title + slug inputs, a clearly labeled \"Create Clue\" button, and slug validation/preview.",
-      "acceptanceCriteria": [
-        "Admin create form includes inputs labeled in English for: Title, URL segment (slug), and Content.",
-        "The submit control is clearly labeled \"Create Clue\".",
-        "Slug is shown/previewed as a path like `/echofields/{slug}` in the admin UI.",
-        "Client-side validation prevents creating a clue with an empty title or empty slug.",
-        "Client-side validation prevents slugs containing `/` (since it must be a single path segment)."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/pages/AdminPage.tsx",
-          "operation": "modify",
-          "description": "Add Title and URL segment (slug) inputs with English labels, show a `/echofields/{slug}` preview, enforce client-side validation (non-empty title/slug, slug cannot contain `/`), and submit via a \"Create Clue\" button using the updated create hook."
-        },
-        {
-          "path": "frontend/src/hooks/useQueries.ts",
-          "operation": "modify",
-          "description": "Update the create-clue mutation to accept the new clue fields (slug, title, content) and invalidate the clue list query on success."
-        }
-      ]
-    },
-    {
-      "id": "REQ-8",
-      "summary": "Add rich paste support in admin content editor: detect pasted media URLs and insert supported markup formats.",
-      "acceptanceCriteria": [
-        "Pasting an image URL (e.g., ending in .png/.jpg/.jpeg/.gif/.webp) into the admin content textarea inserts or converts it into `![Image](URL)` (keeping existing text around the cursor intact).",
-        "Pasting a video URL (e.g., ending in .mp4/.webm/.mov) inserts or converts it into `{{video:URL}}`.",
-        "Pasting a PPT/PPTX URL inserts or converts it into `{{ppt:URL}}`.",
-        "If the pasted text is not a supported URL, it is pasted normally (no destructive transformation).",
-        "Preview tab continues to render pasted/inserted rich media via the existing RichClueContent component."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/utils/pasteRichMedia.ts",
+          "path": "frontend/src/utils/humanizeError.ts",
           "operation": "create",
-          "description": "Create a small utility to classify pasted text as image/video/ppt URL by extension and to produce the correct markup insertion text while leaving non-matching paste untouched."
-        },
-        {
-          "path": "frontend/src/pages/AdminPage.tsx",
-          "operation": "modify",
-          "description": "Add an `onPaste` handler to the content Textarea that uses the new paste utility to transform supported media URLs into the required markup at the cursor position; keep normal paste behavior for unsupported text and ensure the Preview tab continues using the existing RichClueContent component."
-        }
-      ]
-    },
-    {
-      "id": "REQ-9",
-      "summary": "Apply a Windows Aero-inspired glass theme across Home, CluePage, AdminPage, Header, and Footer while remaining readable in light/dark modes.",
-      "acceptanceCriteria": [
-        "Cards/panels use a glassmorphism style (translucent background + backdrop blur) with subtle borders and highlights.",
-        "Primary buttons, inputs, and key containers visually match the Aero style (consistent across Home, CluePage, AdminPage, Header, Footer).",
-        "The theme remains accessible/readable (sufficient contrast) in the existing dark-mode setup (next-themes)."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/index.css",
-          "operation": "modify",
-          "description": "Add Aero/glassmorphism theme primitives (e.g., reusable utility classes for glass surfaces, subtle gradients, and highlights) compatible with the existing CSS variables and dark mode."
-        },
-        {
-          "path": "frontend/tailwind.config.js",
-          "operation": "modify",
-          "description": "Extend Tailwind theme as needed to support consistent Aero styling tokens (e.g., additional colors/gradients/shadows) without changing shadcn/ui components."
-        },
-        {
-          "path": "frontend/src/components/Header.tsx",
-          "operation": "modify",
-          "description": "Adjust Header styling to match the Aero theme (glass surface, subtle gradient/highlight) while keeping existing sticky+blur behavior and readable text in light/dark."
-        },
-        {
-          "path": "frontend/src/components/Footer.tsx",
-          "operation": "modify",
-          "description": "Update Footer container styling to match the Aero theme consistently with Header and page panels."
-        },
-        {
-          "path": "frontend/src/pages/Home.tsx",
-          "operation": "modify",
-          "description": "Apply Aero glass styling to primary containers/cards on the Home page (including the Start CTA card) to match the site-wide theme."
-        },
-        {
-          "path": "frontend/src/pages/CluePage.tsx",
-          "operation": "modify",
-          "description": "Apply Aero glass styling to clue display card and navigation card while preserving readability of RichClueContent in light/dark."
-        },
-        {
-          "path": "frontend/src/pages/AdminPage.tsx",
-          "operation": "modify",
-          "description": "Apply Aero glass styling to admin portal panels (create form, lists, alerts) for a consistent Windows Aero-inspired look across the portal."
+          "description": "Add a small shared utility to convert unknown thrown values (including agent/replica errors) into an English, human-readable message with special handling for authorization/validation-like cases; used by the Admin Create Clue flow to produce clear error toasts while preserving console debug logs."
         }
       ]
     }

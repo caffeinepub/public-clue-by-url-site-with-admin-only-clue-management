@@ -1,15 +1,15 @@
 import { useParams, useNavigate } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
-import { useGetClue } from '../hooks/useQueries';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Home, AlertCircle, ArrowRight, Edit3, X, LockKeyhole } from 'lucide-react';
+import { useGetClueSummary, useSubmitAnswer } from '../hooks/useQueries';
+import { Button } from '../components/ui/button';
+import { Input } from '../components/ui/input';
+import { Label } from '../components/ui/label';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
+import { Skeleton } from '../components/ui/skeleton';
+import { Alert, AlertDescription, AlertTitle } from '../components/ui/alert';
+import { Home, AlertCircle, ArrowRight, LockKeyhole, CheckCircle2 } from 'lucide-react';
 import { RichClueContent } from '../components/RichClueContent';
-import { hasStarted } from '../utils/sessionGating';
+import { hasStarted, isClueUnlocked, unlockNextClue } from '../utils/sessionGating';
 
 export function CluePage() {
   const { clueId } = useParams({ strict: false });
@@ -17,15 +17,19 @@ export function CluePage() {
   
   // Parse clueId as number for backend
   const clueIdNum = clueId ? parseInt(clueId, 10) : NaN;
-  const { data: clue, isLoading, error } = useGetClue(isNaN(clueIdNum) ? null : BigInt(clueIdNum));
+  const clueIdBigInt = isNaN(clueIdNum) ? null : BigInt(clueIdNum);
+  const { data: clue, isLoading, error } = useGetClueSummary(clueIdBigInt);
+  const submitAnswer = useSubmitAnswer();
 
-  const [showSlugInput, setShowSlugInput] = useState(false);
-  const [nextSlug, setNextSlug] = useState('');
+  const [guess, setGuess] = useState('');
+  const [answerError, setAnswerError] = useState('');
+  const [answerSuccess, setAnswerSuccess] = useState(false);
+  const [nextClueId, setNextClueId] = useState<bigint | null>(null);
 
-  // Check if this is the first clue and if Start has been pressed
-  const isFirstClue = clueId === '1';
+  // Check session gating
   const started = hasStarted();
-  const isLocked = isFirstClue && !started;
+  const unlocked = clueIdBigInt !== null && isClueUnlocked(clueIdBigInt);
+  const isLocked = !started || !unlocked;
 
   useEffect(() => {
     // Set document title
@@ -36,14 +40,46 @@ export function CluePage() {
     }
   }, [clueId, clueIdNum]);
 
-  const handleNavigateToSlug = () => {
-    const trimmed = nextSlug.trim();
-    if (!trimmed) {
-      return;
-    }
+  const handleSubmitGuess = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!clueIdBigInt || !guess.trim()) return;
 
-    // Navigate to the slug
-    navigate({ to: '/echofields/$clueId', params: { clueId: trimmed } });
+    setAnswerError('');
+    setAnswerSuccess(false);
+
+    try {
+      const result = await submitAnswer.mutateAsync({
+        clueId: clueIdBigInt,
+        answer: guess.trim(),
+      });
+
+      if (result.correct) {
+        setAnswerSuccess(true);
+        setAnswerError('');
+        if (result.nextClueId) {
+          setNextClueId(result.nextClueId);
+          unlockNextClue(result.nextClueId);
+        }
+      } else {
+        setAnswerError('Incorrect answer. Try again!');
+        setAnswerSuccess(false);
+      }
+    } catch (error: any) {
+      console.error('Submit answer error:', error);
+      setAnswerError(error.message || 'Failed to submit answer');
+      setAnswerSuccess(false);
+    }
+  };
+
+  const handleNavigateToNext = () => {
+    if (nextClueId) {
+      navigate({ to: '/echofields/$clueId', params: { clueId: nextClueId.toString() } });
+      // Reset state for next clue
+      setGuess('');
+      setAnswerError('');
+      setAnswerSuccess(false);
+      setNextClueId(null);
+    }
   };
 
   if (isLoading) {
@@ -61,14 +97,14 @@ export function CluePage() {
     return (
       <div className="container mx-auto px-4 py-16">
         <div className="mx-auto max-w-3xl space-y-6">
-          <Alert variant="destructive" className="aero-glass">
+          <Alert variant="destructive" className="liminal-glass">
             <AlertCircle className="h-4 w-4" />
             <AlertTitle>Clue Not Found</AlertTitle>
             <AlertDescription>
               The clue "{clueId}" doesn't exist. Check the URL or return home to start your journey.
             </AlertDescription>
           </Alert>
-          <Button onClick={() => navigate({ to: '/echofields' })} className="aero-button">
+          <Button onClick={() => navigate({ to: '/echofields' })} className="liminal-button">
             <Home className="mr-2 h-4 w-4" />
             Return Home
           </Button>
@@ -77,26 +113,28 @@ export function CluePage() {
     );
   }
 
-  // Show locked state for first clue if Start hasn't been pressed
+  // Show locked state if session hasn't started or clue is beyond unlocked progression
   if (isLocked) {
     return (
       <div className="container mx-auto px-4 py-16">
         <div className="mx-auto max-w-3xl space-y-6">
-          <Card className="aero-glass-strong border-2 border-yellow-500/30">
+          <Card className="liminal-glass-strong border-2 border-yellow-500/30">
             <CardHeader className="text-center">
               <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-yellow-500/10">
                 <LockKeyhole className="h-8 w-8 text-yellow-500" />
               </div>
               <CardTitle className="text-2xl">Clue Locked</CardTitle>
               <CardDescription>
-                You need to press Start on the home page to begin your journey
+                {!started
+                  ? 'You need to press Start on the home page to begin your journey'
+                  : 'You must solve the previous clues to unlock this one'}
               </CardDescription>
             </CardHeader>
             <CardContent className="flex justify-center">
               <Button
                 size="lg"
                 onClick={() => navigate({ to: '/echofields' })}
-                className="aero-button"
+                className="liminal-button"
               >
                 <Home className="mr-2 h-5 w-5" />
                 Go to Home Page
@@ -114,17 +152,17 @@ export function CluePage() {
         <Button
           variant="ghost"
           onClick={() => navigate({ to: '/echofields' })}
-          className="mb-4 aero-button"
+          className="mb-4 liminal-button"
         >
           <Home className="mr-2 h-4 w-4" />
           Home
         </Button>
 
-        <Card className="aero-glass-strong border-2">
+        <Card className="liminal-glass-strong border-2">
           <CardHeader>
             <div className="flex items-start justify-between">
               <div className="space-y-2">
-                <CardTitle className="text-3xl">Clue #{clueId}</CardTitle>
+                <CardTitle className="text-3xl">{clue.title}</CardTitle>
                 <CardDescription>
                   Clue ID: <code className="rounded bg-muted px-2 py-1 text-sm">{clueId}</code>
                 </CardDescription>
@@ -138,72 +176,82 @@ export function CluePage() {
           </CardContent>
         </Card>
 
-        {/* Slug Navigation Control */}
-        <Card className="aero-glass border-2">
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle className="text-lg">Next Clue Navigation</CardTitle>
-                <CardDescription>
-                  Enter the URL segment to open the next clue
-                </CardDescription>
-              </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => {
-                  setShowSlugInput(!showSlugInput);
-                  setNextSlug('');
-                }}
-                className="aero-button"
-              >
-                {showSlugInput ? (
-                  <>
-                    <X className="mr-2 h-4 w-4" />
-                    Cancel
-                  </>
-                ) : (
-                  <>
-                    <Edit3 className="mr-2 h-4 w-4" />
-                    Edit
-                  </>
+        {/* Answer Submission */}
+        {!answerSuccess && (
+          <Card className="liminal-glass border-2">
+            <CardHeader>
+              <CardTitle className="text-lg">Solve the Clue</CardTitle>
+              <CardDescription>
+                Enter your answer to unlock the next clue
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleSubmitGuess} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="guess">Your Answer</Label>
+                  <Input
+                    id="guess"
+                    type="text"
+                    placeholder="Enter your guess..."
+                    value={guess}
+                    onChange={(e) => {
+                      setGuess(e.target.value);
+                      setAnswerError('');
+                    }}
+                    className="liminal-glass"
+                    disabled={submitAnswer.isPending}
+                  />
+                </div>
+                {answerError && (
+                  <Alert variant="destructive" className="liminal-glass">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertDescription>{answerError}</AlertDescription>
+                  </Alert>
                 )}
-              </Button>
-            </div>
-          </CardHeader>
-          {showSlugInput && (
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="next-slug">URL Segment</Label>
-                <Input
-                  id="next-slug"
-                  type="text"
-                  placeholder="e.g., something"
-                  value={nextSlug}
-                  onChange={(e) => setNextSlug(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      handleNavigateToSlug();
-                    }
-                  }}
-                  className="aero-glass"
-                />
-                <p className="text-xs text-muted-foreground">
-                  This will navigate to: <code className="rounded bg-muted px-2 py-1">/echofields/{nextSlug || '...'}</code>
-                </p>
-              </div>
-              <Button onClick={handleNavigateToSlug} className="w-full aero-button" disabled={!nextSlug.trim()}>
-                <ArrowRight className="mr-2 h-4 w-4" />
-                Go to Next Clue
-              </Button>
+                <Button
+                  type="submit"
+                  className="w-full liminal-button"
+                  disabled={!guess.trim() || submitAnswer.isPending}
+                >
+                  {submitAnswer.isPending ? 'Checking...' : 'Submit Answer'}
+                </Button>
+              </form>
             </CardContent>
-          )}
-        </Card>
+          </Card>
+        )}
 
-        <div className="rounded-lg aero-glass p-6">
+        {/* Success State */}
+        {answerSuccess && (
+          <Card className="liminal-glass-strong border-2 border-green-500/30">
+            <CardHeader className="text-center">
+              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-500/10">
+                <CheckCircle2 className="h-8 w-8 text-green-500" />
+              </div>
+              <CardTitle className="text-2xl text-green-500">Correct!</CardTitle>
+              <CardDescription>
+                {nextClueId
+                  ? 'You solved the clue! Continue to the next one.'
+                  : 'You solved the final clue! Congratulations!'}
+              </CardDescription>
+            </CardHeader>
+            {nextClueId && (
+              <CardContent className="flex justify-center">
+                <Button
+                  size="lg"
+                  onClick={handleNavigateToNext}
+                  className="liminal-button bg-liminal-accent hover:bg-liminal-accent/90"
+                >
+                  <ArrowRight className="mr-2 h-5 w-5" />
+                  Next Clue
+                </Button>
+              </CardContent>
+            )}
+          </Card>
+        )}
+
+        <div className="rounded-lg liminal-glass p-6">
           <p className="text-sm text-muted-foreground">
-            💡 <strong>Tip:</strong> The clue above might contain hints about the next URL segment to visit.
-            Look for keywords or patterns that could form the next path.
+            💡 <strong>Tip:</strong> Read the clue carefully. The answer might be hidden in the text, images, or other media.
           </p>
         </div>
       </div>

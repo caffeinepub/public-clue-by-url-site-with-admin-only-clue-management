@@ -1,214 +1,55 @@
 {
   "kind": "build_request",
-  "title": "Slug-based titled clues with Start gating, rich paste support, and Windows Aero theme",
+  "title": "Fix Create Clue button so clue creation succeeds in the Spectate Portal",
   "priority": "normal",
   "requirements": [
     {
       "id": "REQ-1",
-      "text": "Update the clue data model and APIs to support: (a) a human-readable URL path segment (\"slug\") per clue, (b) a title per clue, and (c) rich content per clue, while preserving existing clue order so there is a well-defined \"first clue\".",
+      "text": "Fix backend authorization so the Spectate Portal owner principals can successfully create clues (and other admin clue actions) without receiving an \"Unauthorized\" trap from the canister.",
       "target": "backend",
       "source": {
         "messageIds": [
-          "user-1"
+          "msg-1"
         ],
         "quotes": [
-          "there should also be a title to each clue",
-          "each clue except the first one should be solved by replacing the word after /",
-          "Add a Create Clue button for generating a new clue tied to a URL"
+          "create clue button does not work"
         ]
       },
       "acceptanceCriteria": [
-        "Backend stores each clue as a structured record containing at least: slug, title, and content.",
-        "Backend provides a way to create a clue with slug+title+content (admin-only as today).",
-        "Backend provides a way to fetch a clue by slug (authenticated user as today).",
-        "Backend provides a way to list clues in a stable order that identifies the first clue (authenticated user as today).",
-        "Existing numeric clue URLs remain possible by treating existing clues as having slugs like \"1\", \"2\", etc. (see migration requirement)."
+        "When logged in with an owner principal (the same allowlist used by the frontend), calling createClue succeeds and does not trap with Unauthorized.",
+        "When logged in with a non-owner principal, createClue continues to fail with an Unauthorized error.",
+        "Owner principals can also successfully perform other admin-only clue operations used by the portal (editClue, deleteClue, clearAllClues, reassignClueId) without Unauthorized errors."
       ]
     },
     {
       "id": "REQ-2",
-      "text": "Add conditional state migration so existing deployed clue data (currently stored as plain Text per incremental Nat ID) is preserved when upgrading to the new clue record format.",
-      "target": "backend",
-      "source": {
-        "messageIds": [
-          "user-1"
-        ],
-        "quotes": [
-          "there should also be a title to each clue"
-        ]
-      },
-      "acceptanceCriteria": [
-        "If existing clue state is present, migration converts each existing clue into the new record format without data loss.",
-        "Migrated clues have deterministic slugs that keep old URLs working (e.g., slug = \"1\" for old clue id 1).",
-        "Migrated clues have a non-empty title (e.g., \"Clue #1\") and content equal to the previous stored Text."
-      ]
-    },
-    {
-      "id": "REQ-3",
-      "text": "Change frontend routing and clue loading so clues are opened via the path segment after `/echofields/` (slug), e.g. `/echofields/something`, not only numeric IDs.",
+      "text": "Ensure the Spectate Portal \"Create Clue\" form submission reliably triggers clue creation and provides clear user feedback on success or failure.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "user-1"
+          "msg-1"
         ],
         "quotes": [
-          "it would be https://echofields-wx7.caffeine.xyz/echofields/something",
-          "each time i should be able to give this something which opens the given clue"
+          "create clue button does not work"
         ]
       },
       "acceptanceCriteria": [
-        "The route `/echofields/$clueId` is updated to accept a slug value (string) and fetch the clue by slug.",
-        "Visiting `/echofields/something` loads and displays the clue associated with slug `something` if it exists.",
-        "If the slug does not exist, the page shows a clear \"Clue Not Found\" error (English) without crashing."
-      ]
-    },
-    {
-      "id": "REQ-4",
-      "text": "Display each clue’s title on the clue page and in any relevant lists/labels, using English user-facing text.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "user-1"
-        ],
-        "quotes": [
-          "there should also be a title to each clue"
-        ]
-      },
-      "acceptanceCriteria": [
-        "CluePage shows the clue title prominently (e.g., as the CardTitle) instead of only \"Clue #...\".",
-        "Admin clue list shows each clue’s title alongside its slug/path.",
-        "No user-facing labels for title are left blank when title exists."
-      ]
-    },
-    {
-      "id": "REQ-5",
-      "text": "Implement Start gating for the first clue: the first clue must remain hidden until the user presses a Start button on the main (/echofields) page; if there are zero clues, the Start button must not show and must not function.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "user-1"
-        ],
-        "quotes": [
-          "First clue stays hidden until Start is pressed on the main page",
-          "If there are zero clues, Start won’t show or work",
-          "also only make the first clue appear if we press the start button in the main web",
-          "if there are no clues at all, no start buttons will do"
-        ]
-      },
-      "acceptanceCriteria": [
-        "On `/echofields`, a single Start button is shown only when at least one clue exists.",
-        "When there are zero clues, the Start button is not rendered and there is no other CTA that navigates to the first clue.",
-        "Pressing Start sets a session-scoped flag (e.g., sessionStorage) that allows viewing the first clue for that browser session.",
-        "If a user tries to open the first clue directly without pressing Start in that session, the clue content is not shown; instead show a locked/prompt state with a button/link back to the home page to press Start.",
-        "Non-first clues are not blocked by the Start gating."
-      ]
-    },
-    {
-      "id": "REQ-6",
-      "text": "Update the clue navigation UX so that for clues after the first, users can progress by entering just the next slug (the word after `/echofields/`) and opening the corresponding clue (i.e., construct `/echofields/{slug}` automatically).",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "user-1"
-        ],
-        "quotes": [
-          "each clue except the first one should be solved by replacing the word after /",
-          "i should be able to give this something which opens the given clue"
-        ]
-      },
-      "acceptanceCriteria": [
-        "CluePage provides an input that accepts a slug value (e.g., \"something\") and navigates to `/echofields/something` on submit.",
-        "The UI still supports pasting a full internal path like `/echofields/something` (and navigates correctly).",
-        "Entering an external URL continues to be validated and opened in a new tab when allowed by existing URL safety rules."
-      ]
-    },
-    {
-      "id": "REQ-7",
-      "text": "Extend the admin create-clue workflow to include an explicit \"Create Clue\" button that creates a new clue tied to a URL slug, and include inputs for both slug and title.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "user-1"
-        ],
-        "quotes": [
-          "Add a Create Clue button for generating a new clue tied to a URL",
-          "there should also be a title to each clue",
-          "add a button named create clue which works for the url"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Admin create form includes inputs labeled in English for: Title, URL segment (slug), and Content.",
-        "The submit control is clearly labeled \"Create Clue\".",
-        "Slug is shown/previewed as a path like `/echofields/{slug}` in the admin UI.",
-        "Client-side validation prevents creating a clue with an empty title or empty slug.",
-        "Client-side validation prevents slugs containing `/` (since it must be a single path segment)."
-      ]
-    },
-    {
-      "id": "REQ-8",
-      "text": "Support copy/paste of videos, images, and PowerPoint links into the clue content area by detecting pasted URLs and auto-inserting the existing supported markup formats: Markdown image `![alt](url)`, video `{{video:url}}`, and PPT `{{ppt:url}}`.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "user-1"
-        ],
-        "quotes": [
-          "able to copy paste videos,imgs and ppts in the area",
-          "i shoould be able to copy paste videos,imgs and ppts in the area"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Pasting an image URL (e.g., ending in .png/.jpg/.jpeg/.gif/.webp) into the admin content textarea inserts or converts it into `![Image](URL)` (keeping existing text around the cursor intact).",
-        "Pasting a video URL (e.g., ending in .mp4/.webm/.mov) inserts or converts it into `{{video:URL}}`.",
-        "Pasting a PPT/PPTX URL inserts or converts it into `{{ppt:URL}}`.",
-        "If the pasted text is not a supported URL, it is pasted normally (no destructive transformation).",
-        "Preview tab continues to render pasted/inserted rich media via the existing RichClueContent component."
-      ]
-    },
-    {
-      "id": "REQ-9",
-      "text": "Apply a Windows Aero-inspired visual theme consistently across the website (home, clue pages, admin portal), including glass-like surfaces, soft gradients, and appropriate blur/transparency while keeping text readable in both light and dark modes.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "user-1"
-        ],
-        "quotes": [
-          "Add a windows aero look to the total website"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Cards/panels use a glassmorphism style (translucent background + backdrop blur) with subtle borders and highlights.",
-        "Primary buttons, inputs, and key containers visually match the Aero style (consistent across Home, CluePage, AdminPage, Header, Footer).",
-        "The theme remains accessible/readable (sufficient contrast) in the existing dark-mode setup (next-themes)."
+        "Submitting the Create Clue form creates a new clue and the new clue appears in the \"Existing Clues\" list without requiring a manual refresh.",
+        "On success, the form fields reset and a success toast is shown.",
+        "On failure (e.g., Unauthorized or validation errors), an error toast is shown with an English, human-readable message and the error is logged to the console for debugging."
       ]
     }
   ],
   "constraints": [
     "Backend must remain a single Motoko actor in backend/main.mo (no additional backend services).",
-    "Generate backend/migration.mo only if required for upgrading existing state; migration must be conditional and preserve old data.",
-    "Do not modify files under frontend/src/components/ui (compose them instead).",
-    "Do not modify immutable hook bootstrap files (frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useActor.ts, frontend/src/main.tsx).",
-    "Use English for any user-facing text."
+    "Do not edit files under frontend/src/components/ui or any paths listed as immutable in SYSTEM_CONTEXT."
   ],
   "nonGoals": [
-    "Implementing third-party authentication providers beyond Internet Identity.",
-    "Uploading/storing binary files (images/videos/ppts) on the backend; this change is limited to pasting links/URLs into clue content.",
-    "Real-time collaboration or chat features.",
-    "Adding external databases or non-Motoko backend services."
+    "Redesigning the Spectate Portal UI beyond what is necessary to fix the Create Clue flow.",
+    "Adding new authentication providers beyond Internet Identity."
   ],
   "imageRequirements": {
     "required": [],
     "edits": []
-  },
-  "userProfileUpdate": {
-    "goalsToAdd": [],
-    "goalsToRemove": [],
-    "preferencesToAdd": [],
-    "preferencesToRemove": [],
-    "miscToAdd": [],
-    "miscToRemove": [],
-    "fieldsToSet": {},
-    "fieldsToDelete": []
   }
 }

@@ -1,66 +1,18 @@
 {
   "schemaVersion": "1.0.0",
   "projectStateVersion": 3,
-  "summary": "Web-based clue/puzzle site where users create titled clues accessible via a URL path segment, with a Start flow to reveal the first clue and support for pasting rich media into clue content, plus a Windows Aero-style UI theme.",
-  "architectural_notes": [
-    "Clue routing uses a dynamic URL segment after /echofields/ (e.g., /echofields/{slugOrCode}) to open specific clues."
+  "summary": "New project",
+  "architectural_notes": [],
+  "known_issues": [
+    "Create clue button does not work (clue creation failing)."
   ],
-  "known_issues": [],
-  "isFixRequest": false,
+  "isFixRequest": true,
   "existing_features": [
     {
-      "id": "feature-change-frontend-routing-and-clue-loading-so-clues-are-opened-via-the-path-segment-after-echofields-slug-e-g-echofields-something-not-only-numeric-ids",
-      "title": "Change frontend routing and clue loading so clues are opened via the path segment after `/echofields/` (slug), e.g. `/echofields/something`, not only numeric IDs.",
+      "id": "feature-ensure-the-spectate-portal-create-clue-form-submission-reliably-triggers-clue-creation-and-provides-clear-user-feedback-on-success-or-failure",
+      "title": "Ensure the Spectate Portal \"Create Clue\" form submission reliably triggers clue creation and provides clear user feedback on success or failure.",
       "reqIds": [
-        "REQ-3"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-display-each-clue-s-title-on-the-clue-page-and-in-any-relevant-lists-labels-using-english-user-facing-text",
-      "title": "Display each clue’s title on the clue page and in any relevant lists/labels, using English user-facing text.",
-      "reqIds": [
-        "REQ-4"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-implement-start-gating-for-the-first-clue-the-first-clue-must-remain-hidden-until-the-user-presses-a-start-button-on-the-main-echofields-page-if-there-are-zero-clues-the-start-button-must-not-show-and-must-not-function",
-      "title": "Implement Start gating for the first clue: the first clue must remain hidden until the user presses a Start button on the main (/echofields) page; if there are zero clues, the Start button must not show and must not function.",
-      "reqIds": [
-        "REQ-5"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-update-the-clue-navigation-ux-so-that-for-clues-after-the-first-users-can-progress-by-entering-just-the-next-slug-the-word-after-echofields-and-opening-the-corresponding-clue-i-e-construct-echofields-slug-automatically",
-      "title": "Update the clue navigation UX so that for clues after the first, users can progress by entering just the next slug (the word after `/echofields/`) and opening the corresponding clue (i.e., construct `/echofields/{slug}` automatically).",
-      "reqIds": [
-        "REQ-6"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-extend-the-admin-create-clue-workflow-to-include-an-explicit-create-clue-button-that-creates-a-new-clue-tied-to-a-url-slug-and-include-inputs-for-both-slug-and-title",
-      "title": "Extend the admin create-clue workflow to include an explicit \"Create Clue\" button that creates a new clue tied to a URL slug, and include inputs for both slug and title.",
-      "reqIds": [
-        "REQ-7"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-support-copy-paste-of-videos-images-and-powerpoint-links-into-the-clue-content-area-by-detecting-pasted-urls-and-auto-inserting-the-existing-supported-markup-formats-markdown-image-alt-url-video-video-url-and-ppt-ppt-url",
-      "title": "Support copy/paste of videos, images, and PowerPoint links into the clue content area by detecting pasted URLs and auto-inserting the existing supported markup formats: Markdown image `![alt](url)`, video `{{video:url}}`, and PPT `{{ppt:url}}`.",
-      "reqIds": [
-        "REQ-8"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-apply-a-windows-aero-inspired-visual-theme-consistently-across-the-website-home-clue-pages-admin-portal-including-glass-like-surfaces-soft-gradients-and-appropriate-blur-transparency-while-keeping-text-readable-in-both-light-and-dark-modes",
-      "title": "Apply a Windows Aero-inspired visual theme consistently across the website (home, clue pages, admin portal), including glass-like surfaces, soft gradients, and appropriate blur/transparency while keeping text readable in both light and dark modes.",
-      "reqIds": [
-        "REQ-9"
+        "REQ-2"
       ],
       "version": 1
     }
@@ -68,65 +20,14 @@
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Add a 'Create Clue' button to create a new clue tied to a URL/path segment",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-2",
-      "summary": "Gate the first clue behind a Start button on the main page; first clue is hidden until Start is pressed",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-3",
-      "summary": "If there are zero clues, the Start button should not appear and/or should not function",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-4",
-      "summary": "Allow copy/paste of videos, images, and PPTs into the clue content area",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-5",
-      "summary": "Each clue should have a title field/displayed title",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-6",
-      "summary": "Clue solving/navigation: for clues after the first, progress by changing the URL segment after /echofields/ (e.g., /echofields/something) and allow entering 'something' to open the corresponding clue",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-7",
-      "summary": "Apply a Windows Aero look/theme across the entire website",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-8",
-      "summary": "Update the clue data model and APIs to support: (a) a human-readable URL path segment (\"slug\") per clue, (b) a title per clue, and (c) rich content per clue, while preserving existing clue order so there is a well-defined \"first clue\".",
+      "summary": "Fix backend authorization so the Spectate Portal owner principals can successfully create clues (and other admin clue actions) without receiving an \"Unauthorized\" trap from the canister.",
       "reqIds": [
         "REQ-1"
       ],
       "status": "pending"
-    },
-    {
-      "id": "AR-9",
-      "summary": "Add conditional state migration so existing deployed clue data (currently stored as plain Text per incremental Nat ID) is preserved when upgrading to the new clue record format.",
-      "reqIds": [
-        "REQ-2"
-      ],
-      "status": "pending"
     }
   ],
-  "gameProjectType": "none",
-  "projectName": "Slug-based titled clues with Start gating, rich paste support, and Windows Aero theme",
+  "projectName": "Fix Create Clue button so clue creation succeeds in the Spectate Portal",
   "clarification_mode": "instant",
   "clarification_rounds": 0
 }

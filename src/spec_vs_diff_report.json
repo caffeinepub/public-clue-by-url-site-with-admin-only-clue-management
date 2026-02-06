@@ -1,107 +1,94 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-05T16:00:06.985Z",
-  "summary": "Frontend adds Windows Aero-style CSS utilities, Start gating via sessionStorage, and rich-media paste utilities. However, backend clue model/APIs remain Text-by-Nat without slug/title/content, no migration is shown, and frontend routing/loading still depends on numeric IDs, so slug-based clues and titles are not actually supported end-to-end.",
+  "generatedAt": "2026-02-05T19:51:28.544Z",
+  "summary": "Frontend changes add improved error humanization and React Query refetching for clue creation, but the diff summary does not show the key backend change needed to align backend admin authorization with the Spectate Portal owner allowlist. Several unrelated UI/routing/theming features appear to have been added beyond the requested Create Clue fix.",
   "missing_requirements": [
     {
       "id": "REQ-1",
-      "requirement": "Backend clue data model and APIs must support slug + title + rich content, provide create/fetch-by-slug/list-in-stable-order, and keep numeric URLs working via slugs like \"1\".",
-      "reason": "Diff shows backend still stores/returns clues as plain Text indexed by Nat (createClue(Text), getClue(Nat)->Text, listClues()->[Text]) with no slug/title/content record type and no get-by-slug API.",
+      "requirement": "Fix backend authorization so the Spectate Portal owner principals can successfully create clues (and other admin clue actions) without receiving an \"Unauthorized\" trap from the canister; non-owners must still be unauthorized; owners must be able to editClue, deleteClue, clearAllClues, reassignClueId without Unauthorized.",
+      "reason": "backend/main.mo shows admin-gated methods (createClue/editClue/reassignClueId) still relying on AccessControl.hasPermission/#admin, but the diff summary does not show any implementation that actually maps the Spectate Portal owner principal allowlist (used in the frontend) into the canister's admin set. Without an explicit linkage, owner principals may still trap as Unauthorized. Also, deleteClue and clearAllClues are not shown in the backend excerpt, so their authorization behavior cannot be verified from the provided diff summary.",
       "evidence": [
         "backend/main.mo"
       ]
     },
     {
       "id": "REQ-2",
-      "requirement": "Add conditional state migration preserving existing Text-per-Nat clues into the new clue record format with deterministic slugs (\"1\", \"2\", ...) and non-empty titles (e.g., \"Clue #1\").",
-      "reason": "No migration file or migration logic is shown; backend remains on the old Text clue format, so there is nothing converting existing state to the new structure.",
+      "requirement": "On Create Clue success: form fields reset and a success toast is shown; on failure: an English human-readable error toast is shown and the error is logged to console; newly created clue appears in Existing Clues without manual refresh.",
+      "reason": "The diff summary shows (a) refetching clue summaries after create via useCreateClue and (b) console error logging on create failure plus a humanizeError helper, but the provided AdminPage.tsx content is truncated before showing whether success toasts and form reset are implemented, and whether error toasts always use human-readable messages (vs raw errors). Therefore the full AC cannot be confirmed from the diff summary alone.",
       "evidence": [
-        "backend/main.mo"
-      ]
-    },
-    {
-      "id": "REQ-3",
-      "requirement": "Frontend routing and clue loading must use the slug after /echofields/ and fetch the clue by slug; nonexistent slugs show \"Clue Not Found\" without crashing.",
-      "reason": "CluePage still parses the route param as a number and calls useGetClue with a BigInt numeric ID; if the param is non-numeric it immediately renders \"Clue Not Found\" rather than fetching by slug.",
-      "evidence": [
-        "frontend/src/pages/CluePage.tsx",
-        "frontend-file-summaries.txt"
-      ]
-    },
-    {
-      "id": "REQ-4",
-      "requirement": "Display each clue’s title on the clue page and in relevant lists/labels (admin list shows title alongside slug/path).",
-      "reason": "Frontend clue fetch returns only Text content (per backend), so CluePage sets title as \"Clue #...\" and cannot display a stored clue title; admin list/title+slug display is not evidenced and backend listClues returns [Text] only.",
-      "evidence": [
-        "frontend/src/pages/CluePage.tsx",
+        "frontend/src/hooks/useQueries.ts",
         "frontend/src/pages/AdminPage.tsx",
-        "backend/main.mo"
-      ]
-    },
-    {
-      "id": "REQ-5",
-      "requirement": "Start gating must only block the first clue determined by stable clue order (not hardcoded), allow unlock per session, and not block non-first clues.",
-      "reason": "Start gating is hardcoded to treat clueId === '1' as the first clue; there is no evidence it derives the first clue from a stable ordered clue list/first element as required once slugs are introduced.",
-      "evidence": [
-        "frontend/src/pages/CluePage.tsx",
-        "frontend/src/pages/Home.tsx"
-      ]
-    },
-    {
-      "id": "REQ-6",
-      "requirement": "For clues after the first, allow entering just the next slug and navigate to /echofields/{slug}; support full internal paths; external URLs still open safely in a new tab per existing safety rules.",
-      "reason": "CluePage navigates using the entered value as the route param, but clue loading still requires a numeric ID (parseInt + useGetClue(BigInt)), so entering a non-numeric slug cannot actually load a clue. No evidence is shown that full internal paths are normalized/handled or that external URLs are still validated/opened per safeUrl rules in this input flow.",
-      "evidence": [
-        "frontend/src/pages/CluePage.tsx"
-      ]
-    },
-    {
-      "id": "REQ-7",
-      "requirement": "Admin create-clue workflow must create a clue tied to slug + title + content (with client-side validation and slug preview).",
-      "reason": "AdminPage collects title/slug/content and validates them, but the create call still sends only content to the backend (`mutateAsync(newClueContent)`) and explicitly notes \"until backend supports structured clues\"; thus it does not actually create slug+title+content clues.",
-      "evidence": [
-        "frontend/src/pages/AdminPage.tsx",
-        "backend/main.mo"
+        "frontend/src/utils/humanizeError.ts"
       ]
     }
   ],
   "hallucinated_features": [
     {
-      "description": "Modification to immutable hook bootstrap file useInternetIdentity.ts",
-      "reason": "BuildRequest constraints explicitly forbid modifying frontend/src/hooks/useInternetIdentity.ts, but the diff summary indicates changes to that file.",
+      "description": "Route restructuring/prefixing all routes with /echofields, adding redirects (including /echofields/admin -> /echofields/spectate).",
+      "reason": "Not requested; request was limited to fixing Create Clue flow and backend authorization.",
       "evidence": [
-        "frontend-file-summaries.txt"
+        "frontend-file-summaries.txt (frontend/src/App.tsx)"
       ]
     },
     {
-      "description": "Footer attribution/link to caffeine.ai",
-      "reason": "Not requested by any requirement; adds new branding/attribution content in the UI.",
+      "description": "Broad UI/theming redesign ('liminal glass styling', new palette, animations, global style changes, tailwind theme tokens).",
+      "reason": "Explicit non-goal: redesigning the Spectate Portal UI beyond what is necessary.",
       "evidence": [
-        "frontend/src/components/Footer.tsx"
+        "frontend-file-summaries.txt (frontend/src/index.css)",
+        "frontend-file-summaries.txt (frontend/tailwind.config.js)",
+        "frontend-file-summaries.txt (frontend/src/pages/Home.tsx)",
+        "frontend-file-summaries.txt (frontend/src/components/Header.tsx)",
+        "frontend-file-summaries.txt (frontend/src/components/Footer.tsx)"
       ]
     },
     {
-      "description": "Owner principal allowlist enforcing owner-only access on the admin portal",
-      "reason": "Not part of the stated requirements; the BuildRequest mentions admin-only as today, but does not request adding a hardcoded owner allowlist in the frontend.",
+      "description": "Session-based route locking/progression gating utilities and changes to clue navigation (removing URL-based navigation controls).",
+      "reason": "Not requested; unrelated to fixing admin Create Clue flow.",
       "evidence": [
-        "frontend/src/pages/AdminPage.tsx"
+        "frontend-file-summaries.txt (frontend/src/pages/CluePage.tsx)",
+        "frontend-file-summaries.txt (frontend/src/utils/sessionGating.ts)"
+      ]
+    },
+    {
+      "description": "New rich media handling features (safe URL validation, paste transformation utilities, RichClueContent rendering for media types).",
+      "reason": "Not requested by the BuildRequest; not necessary to fix Create Clue submission reliability and authorization.",
+      "evidence": [
+        "frontend-file-summaries.txt (frontend/src/components/RichClueContent.tsx)",
+        "frontend-file-summaries.txt (frontend/src/utils/safeUrl.ts)",
+        "frontend-file-summaries.txt (frontend/src/utils/pasteRichMedia.ts)"
+      ]
+    },
+    {
+      "description": "Clue deletion consistency guards / clear-window behavior and additional query consistency logic.",
+      "reason": "Not requested; the request focuses on Create Clue and backend admin authorization.",
+      "evidence": [
+        "frontend/src/hooks/useQueries.ts"
+      ]
+    },
+    {
+      "description": "Footer build version identifier/build metadata module.",
+      "reason": "Not requested.",
+      "evidence": [
+        "frontend-file-summaries.txt (frontend/src/components/Footer.tsx)",
+        "frontend-file-summaries.txt (frontend/src/utils/buildInfo.ts)"
+      ]
+    },
+    {
+      "description": "Internet Identity hook behavioral changes (session restore/status changes, identityProvider option handling).",
+      "reason": "Not requested; BuildRequest explicitly says no new auth providers, but does not request II refactors.",
+      "evidence": [
+        "frontend-file-summaries.txt (frontend/src/hooks/useInternetIdentity.ts)"
       ]
     }
   ],
-  "confidence": 0.76,
+  "confidence": 0.64,
   "changed_files": [
     "backend/main.mo",
     "frontend-file-summaries.txt",
-    "frontend/src/components/Footer.tsx",
-    "frontend/src/components/Header.tsx",
-    "frontend/src/index.css",
+    "frontend/src/hooks/useQueries.ts",
     "frontend/src/pages/AdminPage.tsx",
-    "frontend/src/pages/CluePage.tsx",
-    "frontend/src/pages/Home.tsx",
-    "frontend/src/utils/pasteRichMedia.ts",
-    "frontend/src/utils/sessionGating.ts",
-    "frontend/tailwind.config.js",
+    "frontend/src/utils/humanizeError.ts",
     "project_state.json"
   ]
 }

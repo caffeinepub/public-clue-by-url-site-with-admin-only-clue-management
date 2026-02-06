@@ -10,6 +10,26 @@ import type { ActorMethod } from '@icp-sdk/core/agent';
 import type { IDL } from '@icp-sdk/core/candid';
 import type { Principal } from '@icp-sdk/core/principal';
 
+export interface AnswerResult {
+  'correct' : boolean,
+  'nextClueId' : [] | [bigint],
+}
+export interface Clue {
+  'id' : bigint,
+  'media' : [] | [Media],
+  'title' : string,
+  'statement' : string,
+  'answer' : string,
+}
+export interface ClueSummary {
+  'id' : bigint,
+  'media' : [] | [Media],
+  'title' : string,
+  'statement' : string,
+}
+export type Media = { 'imageUrl' : string } |
+  { 'pptUrl' : string } |
+  { 'videoUrl' : string };
 export interface UserProfile { 'name' : string }
 export type UserRole = { 'admin' : null } |
   { 'user' : null } |
@@ -17,15 +37,20 @@ export type UserRole = { 'admin' : null } |
 export interface _SERVICE {
   '_initializeAccessControlWithSecret' : ActorMethod<[string], undefined>,
   'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
-  'createClue' : ActorMethod<[string], undefined>,
+  'clearAllClues' : ActorMethod<[], undefined>,
+  'createClue' : ActorMethod<[Clue], undefined>,
   'deleteClue' : ActorMethod<[bigint], undefined>,
+  'editClue' : ActorMethod<[bigint, [] | [Clue]], undefined>,
+  'getAllClueSummaries' : ActorMethod<[], Array<ClueSummary>>,
   'getCallerUserProfile' : ActorMethod<[], [] | [UserProfile]>,
   'getCallerUserRole' : ActorMethod<[], UserRole>,
-  'getClue' : ActorMethod<[bigint], string>,
+  'getClueSummary' : ActorMethod<[bigint], ClueSummary>,
+  'getFirstAvailableClueSummary' : ActorMethod<[], ClueSummary>,
   'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
   'isCallerAdmin' : ActorMethod<[], boolean>,
-  'listClues' : ActorMethod<[], Array<string>>,
+  'reassignClueId' : ActorMethod<[bigint, bigint], undefined>,
   'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
+  'submitAnswer' : ActorMethod<[bigint, string], AnswerResult>,
 }
 export declare const idlService: IDL.ServiceClass;
 export declare const idlInitArgs: IDL.Type[];

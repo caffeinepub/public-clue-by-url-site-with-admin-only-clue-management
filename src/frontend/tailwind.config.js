@@ -6,6 +6,7 @@ export default {
     extend: {
       fontFamily: {
         michroma: ['Michroma', 'sans-serif'],
+        inter: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
       },
       borderRadius: {
         lg: 'var(--radius)',
@@ -56,13 +57,18 @@ export default {
         echofields: {
           green: 'var(--echofields-green)',
         },
-        aero: {
+        liminal: {
           glass: {
-            bg: 'var(--aero-glass-bg)',
-            border: 'var(--aero-glass-border)',
-            highlight: 'var(--aero-glass-highlight)',
-            shadow: 'var(--aero-glass-shadow)',
+            bg: 'var(--liminal-glass-bg)',
+            border: 'var(--liminal-glass-border)',
+            highlight: 'var(--liminal-glass-highlight)',
+            shadow: 'var(--liminal-glass-shadow)',
+            glow: 'var(--liminal-glass-glow)',
           },
+          accent: 'var(--liminal-accent)',
+          text: 'var(--liminal-text)',
+          muted: 'var(--liminal-muted)',
+          warning: 'var(--liminal-warning)',
         },
       },
       keyframes: {
@@ -92,13 +98,22 @@ export default {
             backgroundPosition: '200% 0',
           },
         },
+        liminalGlow: {
+          '0%, 100%': {
+            boxShadow: '0 0 12px var(--liminal-glass-glow)',
+          },
+          '50%': {
+            boxShadow: '0 0 20px var(--liminal-glass-glow), 0 0 32px var(--liminal-glass-glow)',
+          },
+        },
       },
       animation: {
         fadeInZoom: 'fadeInZoom 3s ease-in-out',
         shimmer: 'shimmer 3s ease-in-out infinite',
+        liminalGlow: 'liminalGlow 3s ease-in-out infinite',
       },
       backgroundImage: {
-        'aero-gradient': 'linear-gradient(135deg, var(--aero-glass-highlight), var(--aero-glass-bg))',
+        'liminal-gradient': 'linear-gradient(135deg, var(--liminal-glass-highlight), var(--liminal-glass-bg))',
       },
     },
   },

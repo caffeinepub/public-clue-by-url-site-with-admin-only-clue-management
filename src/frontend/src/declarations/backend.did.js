@@ -13,24 +13,51 @@ export const UserRole = IDL.Variant({
   'user' : IDL.Null,
   'guest' : IDL.Null,
 });
+export const Media = IDL.Variant({
+  'imageUrl' : IDL.Text,
+  'pptUrl' : IDL.Text,
+  'videoUrl' : IDL.Text,
+});
+export const Clue = IDL.Record({
+  'id' : IDL.Nat,
+  'media' : IDL.Opt(Media),
+  'title' : IDL.Text,
+  'statement' : IDL.Text,
+  'answer' : IDL.Text,
+});
+export const ClueSummary = IDL.Record({
+  'id' : IDL.Nat,
+  'media' : IDL.Opt(Media),
+  'title' : IDL.Text,
+  'statement' : IDL.Text,
+});
 export const UserProfile = IDL.Record({ 'name' : IDL.Text });
+export const AnswerResult = IDL.Record({
+  'correct' : IDL.Bool,
+  'nextClueId' : IDL.Opt(IDL.Nat),
+});
 
 export const idlService = IDL.Service({
   '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
   'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
-  'createClue' : IDL.Func([IDL.Text], [], []),
+  'clearAllClues' : IDL.Func([], [], []),
+  'createClue' : IDL.Func([Clue], [], []),
   'deleteClue' : IDL.Func([IDL.Nat], [], []),
+  'editClue' : IDL.Func([IDL.Nat, IDL.Opt(Clue)], [], []),
+  'getAllClueSummaries' : IDL.Func([], [IDL.Vec(ClueSummary)], ['query']),
   'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
   'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
-  'getClue' : IDL.Func([IDL.Nat], [IDL.Text], ['query']),
+  'getClueSummary' : IDL.Func([IDL.Nat], [ClueSummary], ['query']),
+  'getFirstAvailableClueSummary' : IDL.Func([], [ClueSummary], ['query']),
   'getUserProfile' : IDL.Func(
       [IDL.Principal],
       [IDL.Opt(UserProfile)],
       ['query'],
     ),
   'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
-  'listClues' : IDL.Func([], [IDL.Vec(IDL.Text)], ['query']),
+  'reassignClueId' : IDL.Func([IDL.Nat, IDL.Nat], [], []),
   'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
+  'submitAnswer' : IDL.Func([IDL.Nat, IDL.Text], [AnswerResult], []),
 });
 
 export const idlInitArgs = [];
@@ -41,24 +68,51 @@ export const idlFactory = ({ IDL }) => {
     'user' : IDL.Null,
     'guest' : IDL.Null,
   });
+  const Media = IDL.Variant({
+    'imageUrl' : IDL.Text,
+    'pptUrl' : IDL.Text,
+    'videoUrl' : IDL.Text,
+  });
+  const Clue = IDL.Record({
+    'id' : IDL.Nat,
+    'media' : IDL.Opt(Media),
+    'title' : IDL.Text,
+    'statement' : IDL.Text,
+    'answer' : IDL.Text,
+  });
+  const ClueSummary = IDL.Record({
+    'id' : IDL.Nat,
+    'media' : IDL.Opt(Media),
+    'title' : IDL.Text,
+    'statement' : IDL.Text,
+  });
   const UserProfile = IDL.Record({ 'name' : IDL.Text });
+  const AnswerResult = IDL.Record({
+    'correct' : IDL.Bool,
+    'nextClueId' : IDL.Opt(IDL.Nat),
+  });
   
   return IDL.Service({
     '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
     'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
-    'createClue' : IDL.Func([IDL.Text], [], []),
+    'clearAllClues' : IDL.Func([], [], []),
+    'createClue' : IDL.Func([Clue], [], []),
     'deleteClue' : IDL.Func([IDL.Nat], [], []),
+    'editClue' : IDL.Func([IDL.Nat, IDL.Opt(Clue)], [], []),
+    'getAllClueSummaries' : IDL.Func([], [IDL.Vec(ClueSummary)], ['query']),
     'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
     'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
-    'getClue' : IDL.Func([IDL.Nat], [IDL.Text], ['query']),
+    'getClueSummary' : IDL.Func([IDL.Nat], [ClueSummary], ['query']),
+    'getFirstAvailableClueSummary' : IDL.Func([], [ClueSummary], ['query']),
     'getUserProfile' : IDL.Func(
         [IDL.Principal],
         [IDL.Opt(UserProfile)],
         ['query'],
       ),
     'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
-    'listClues' : IDL.Func([], [IDL.Vec(IDL.Text)], ['query']),
+    'reassignClueId' : IDL.Func([IDL.Nat, IDL.Nat], [], []),
     'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
+    'submitAnswer' : IDL.Func([IDL.Nat, IDL.Text], [AnswerResult], []),
   });
 };
 
